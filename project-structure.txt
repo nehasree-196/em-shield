@@ -1,0 +1,71 @@
+﻿|-- .github
+|   |-- workflows
+|   |   |-- README.md
+|-- backend
+|   |-- physics
+|   |   |-- README.md
+|   |-- exports.py
+|   |-- main.py
+|   |-- materials.py
+|   |-- multilayer.py
+|   |-- optimization.py
+|   |-- README.md
+|   |-- requirements.txt
+|   |-- schemas.py
+|   |-- simulation.py
+|-- data
+|   |-- materials.json
+|-- docs
+|   |-- README.md
+|-- frontend
+|   |-- src
+|   |   |-- app
+|   |   |   |-- router.tsx
+|   |   |-- components
+|   |   |   |-- layout
+|   |   |   |   |-- AppLayout.tsx
+|   |   |   |   |-- Sidebar.tsx
+|   |   |   |-- README.md
+|   |   |-- context
+|   |   |   |-- README.md
+|   |   |-- pages
+|   |   |   |-- page1_dashboard
+|   |   |   |   |-- Dashboard.tsx
+|   |   |   |   |-- README.md
+|   |   |   |-- page2_material_library
+|   |   |   |   |-- MaterialLibrary.tsx
+|   |   |   |   |-- README.md
+|   |   |   |-- page3_single_layer
+|   |   |   |   |-- README.md
+|   |   |   |   |-- SingleLayer.tsx
+|   |   |   |-- page4_multilayer
+|   |   |   |   |-- Multilayer.tsx
+|   |   |   |   |-- README.md
+|   |   |   |-- page5_frequency_analysis
+|   |   |   |   |-- FrequencyAnalysis.tsx
+|   |   |   |   |-- README.md
+|   |   |   |-- page6_optimization
+|   |   |   |   |-- Optimization.tsx
+|   |   |   |   |-- README.md
+|   |   |   |-- page7_results_export
+|   |   |   |   |-- README.md
+|   |   |   |   |-- ResultsExport.tsx
+|   |   |-- services
+|   |   |   |-- api.ts
+|   |   |-- styles
+|   |   |   |-- global.css
+|   |   |-- types
+|   |   |   |-- README.md
+|   |   |-- App.tsx
+|   |   |-- main.tsx
+|   |-- index.html
+|   |-- package.json
+|   |-- package-lock.json
+|   |-- README.md
+|   |-- vite.config.ts
+|-- tests
+|   |-- README.md
+|   |-- test_simulation.py
+|-- .gitignore
+|-- project-structure.txt
+|-- README.md

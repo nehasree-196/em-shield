@@ -1,7 +1,6 @@
 //this is just a test file
 
-
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";                                                  //helps in navigating pages without reloading the whole website
 import {
   ArrowRight,
   Atom,
@@ -13,7 +12,7 @@ import {
   ShieldCheck,
   Waves,
   ChartNoAxesCombined,
-} from "lucide-react";
+} from "lucide-react";                                                                    //all the icons used on the dashboard
 
 const workspaces = [
   {

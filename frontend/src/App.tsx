@@ -1,5 +1,6 @@
-// Placeholder root component for EM-Shield.
-// TODO: Add routing, shared layout, and page navigation.
+import { RouterProvider } from "react-router-dom";
+import { router } from "./app/router";
+
 export default function App() {
-  return null;
+  return <RouterProvider router={router} />;
 }

@@ -1,8 +1,9 @@
 
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
 
-/* this defines the  global styles of the website*/
-/* this includes fonts and colours */
+/* =====================================================
+   GLOBAL STYLES
+===================================================== */
 
 :root {
   font-family: "DM Sans", sans-serif;
@@ -60,7 +61,8 @@ a {
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
-select:focus-visible {
+select:focus-visible,
+textarea:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
@@ -70,7 +72,9 @@ select:focus-visible {
   background: var(--bg);
 }
 
-/* Sidebar */
+/* =====================================================
+   SIDEBAR
+===================================================== */
 
 .sidebar {
   position: fixed;
@@ -211,7 +215,9 @@ select:focus-visible {
   font-size: 10px;
 }
 
-/* Main Layout */
+/* =====================================================
+   MAIN LAYOUT
+===================================================== */
 
 .app-main {
   display: flex;
@@ -221,7 +227,9 @@ select:focus-visible {
   background: var(--bg);
 }
 
-/* Top Navigation */
+/* =====================================================
+   TOP NAVIGATION
+===================================================== */
 
 .topbar {
   display: flex;
@@ -265,7 +273,9 @@ select:focus-visible {
   border-radius: 50%;
 }
 
-/* Page Content */
+/* =====================================================
+   PAGE CONTENT
+===================================================== */
 
 .page-content {
   flex: 1;
@@ -286,7 +296,9 @@ select:focus-visible {
   font-size: 10px;
 }
 
-/* Dashboard */
+/* =====================================================
+   DASHBOARD
+===================================================== */
 
 .dashboard {
   display: flex;
@@ -317,7 +329,9 @@ select:focus-visible {
   line-height: 1.8;
 }
 
-/* Buttons */
+/* =====================================================
+   BUTTONS
+===================================================== */
 
 .primary-button,
 .secondary-button {
@@ -355,7 +369,9 @@ select:focus-visible {
   background: #dcd7ff;
 }
 
-/* Section Headings */
+/* =====================================================
+   SECTION HEADINGS
+===================================================== */
 
 .section-heading {
   display: flex;
@@ -378,7 +394,9 @@ select:focus-visible {
   font-size: 11px;
 }
 
-/* Workspace Cards */
+/* =====================================================
+   WORKSPACE CARDS
+===================================================== */
 
 .workspace-grid {
   display: grid;
@@ -395,7 +413,8 @@ select:focus-visible {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 13px;
-  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  transition: transform 160ms ease, border-color 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .workspace-card:hover {
@@ -439,102 +458,200 @@ select:focus-visible {
   font-weight: 600;
 }
 
-/* Lower Dashboard Panels */
+/* Dashboard informational cards */
 
-.dashboard-lower-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
-  gap: 15px;
+.dashboard-info-card {
+  cursor: default;
 }
 
-.panel {
-  min-width: 0;
-  padding: 20px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 13px;
+.dashboard-info-card:hover {
+  transform: none;
+  border-color: var(--border);
+  box-shadow: none;
 }
 
-/* Empty State */
+/* =====================================================
+   START SIMULATION MODAL
+===================================================== */
 
-.empty-state {
+.simulation-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 155px;
-  padding: 18px;
+
+  padding: 20px;
+
+  background: rgba(32, 20, 73, 0.48);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.simulation-modal {
+  width: 100%;
+  max-width: 510px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+
+  padding: 25px;
+
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+
+  box-shadow: 0 18px 60px rgba(35, 20, 80, 0.22);
+
+  animation: modalAppear 180ms ease-out;
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Modal heading */
+
+.simulation-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 23px;
+}
+
+.simulation-modal-header h3 {
+  margin: 5px 0 8px;
+  color: var(--deep-purple);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 21px;
+}
+
+.simulation-modal-header > div > p:last-child {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* Close button */
+
+.modal-close-button {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  width: 34px;
+  height: 34px;
+
+  color: var(--muted);
+  background: var(--panel-light);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.modal-close-button:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* Simulation options */
+
+.simulation-modal-options {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.simulation-modal-option {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  width: 100%;
+  padding: 15px;
+
+  background: #f5f5ff;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+
+  cursor: pointer;
+  text-align: left;
+
+  transition: background 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.simulation-modal-option:hover {
+  background: var(--accent-soft);
+  border-color: var(--purple-light);
+  transform: translateX(3px);
+}
+
+.simulation-option-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  width: 44px;
+  height: 44px;
+
+  color: var(--accent);
+  background: #e4ddff;
+  border-radius: 10px;
+}
+
+.simulation-option-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.simulation-option-content strong {
+  color: var(--deep-purple);
+  font-size: 12px;
+}
+
+.simulation-option-content small {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.simulation-option-arrow {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+/* Modal footer */
+
+.simulation-modal-footer {
+  padding-top: 18px;
+  margin-top: 19px;
+  border-top: 1px solid var(--border);
+
+  color: var(--muted);
+  font-size: 10px;
   text-align: center;
 }
 
-.empty-state-icon {
-  display: grid;
-  place-items: center;
-  width: 43px;
-  height: 43px;
-  margin-bottom: 12px;
-  color: var(--accent);
-  background: var(--accent-soft);
-  border-radius: 12px;
-}
-
-.empty-state strong {
-  font-size: 12px;
-  color: var(--deep-purple);
-}
-
-.empty-state p {
-  max-width: 280px;
-  margin: 7px 0 0;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.7;
-}
-
-/* Model List */
-
-.model-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.model-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.model-item > svg {
-  flex-shrink: 0;
-  margin-top: 2px;
-  color: var(--green);
-}
-
-.model-item strong {
-  font-size: 12px;
-  color: var(--deep-purple);
-}
-
-.model-item p {
-  margin: 5px 0 0;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.7;
-}
-
-.model-note {
-  margin-top: 17px;
-  padding: 11px 12px;
-  color: #55448e;
-  background: #e2ddff;
-  border: 1px solid #d0c5ff;
-  border-radius: 8px;
-  font-size: 10px;
-  line-height: 1.7;
-}
-
-/* Tablet Responsive Design */
+/* =====================================================
+   TABLET RESPONSIVE DESIGN
+===================================================== */
 
 @media (max-width: 1100px) {
   .sidebar {
@@ -558,7 +675,9 @@ select:focus-visible {
   }
 }
 
-/* Mobile Responsive Design */
+/* =====================================================
+   MOBILE RESPONSIVE DESIGN
+===================================================== */
 
 @media (max-width: 760px) {
   .sidebar {
@@ -624,8 +743,7 @@ select:focus-visible {
     flex-direction: column;
   }
 
-  .workspace-grid,
-  .dashboard-lower-grid {
+  .workspace-grid {
     grid-template-columns: 1fr;
   }
 
@@ -636,5 +754,29 @@ select:focus-visible {
   .app-footer {
     flex-direction: column;
     padding: 15px 18px;
+  }
+
+  /* Modal mobile adjustments */
+
+  .simulation-modal-overlay {
+    padding: 15px;
+  }
+
+  .simulation-modal {
+    padding: 19px;
+    border-radius: 14px;
+  }
+
+  .simulation-modal-header h3 {
+    font-size: 18px;
+  }
+
+  .simulation-modal-option {
+    padding: 12px;
+  }
+
+  .simulation-option-icon {
+    width: 39px;
+    height: 39px;
   }
 }

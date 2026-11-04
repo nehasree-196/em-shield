@@ -1,15 +1,14 @@
 
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { Link } from "react-router-dom";
 import {
   ArrowRight,
   Layers3,
   Boxes,
   Gauge,
-  Clock3,
-  ShieldCheck,
-  Waves,
-  ChartNoAxesCombined,
+  X,
+  PlayCircle,
 } from "lucide-react";
 
 const workspaces = [

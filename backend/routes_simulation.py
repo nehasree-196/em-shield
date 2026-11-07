@@ -10,7 +10,7 @@ from simulation import (conductor_ratio, failing_ranges, single_layer, skin_dept
                         skin_depth_good_conductor)
 
 router = APIRouter(prefix="/api")
-app.include_router(simulation_router)
+router.include_router(simulation_router)
 
 def _num(x):
     """JSON cannot hold inf/nan: convert to None."""

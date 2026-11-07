@@ -1,7 +1,7 @@
 """routes_simulation.py — FastAPI routes for pages 3-5; every number returned is computed here, never in the UI."""
 import numpy as np
 from fastapi import APIRouter, HTTPException
-from routes_simulation import router as simulation_router
+
 
 from materials import list_materials, resolve_material
 from multilayer import stack_response, sweep
@@ -10,7 +10,7 @@ from simulation import (conductor_ratio, failing_ranges, single_layer, skin_dept
                         skin_depth_good_conductor)
 
 router = APIRouter(prefix="/api")
-router.include_router(simulation_router)
+
 
 def _num(x):
     """JSON cannot hold inf/nan: convert to None."""

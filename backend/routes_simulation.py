@@ -2,7 +2,6 @@
 import numpy as np
 from fastapi import APIRouter, HTTPException
 
-
 from materials import list_materials, resolve_material
 from multilayer import stack_response, sweep
 from schemas import MultilayerRequest, SingleLayerRequest, SweepRequest

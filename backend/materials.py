@@ -10,14 +10,29 @@ from backend.schemas import MaterialCreate
 DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "materials.json"
 
 
+
 def load_materials():
-    """Load all materials from the JSON database."""
+    """Load and validate all materials from the JSON database."""
 
     if not DATA_FILE.exists():
         return []
 
     with DATA_FILE.open("r", encoding="utf-8") as file:
-        return json.load(file)
+        materials = json.load(file)
+
+    if not isinstance(materials, list):
+        raise ValueError("Material database must contain a JSON list.")
+
+    for index, material in enumerate(materials):
+        try:
+            MaterialCreate.model_validate(material)
+        except Exception as exc:
+            raise ValueError(
+                f"Invalid material record at index {index}: {exc}"
+            ) from exc
+
+    return materials
+
 
 
 def save_materials(materials):

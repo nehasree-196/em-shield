@@ -1,22 +1,28 @@
-
 """FastAPI entry point for EM-Shield."""
 
 from fastapi import FastAPI, HTTPException, Query
-
+from fastapi.middleware.cors import CORSMiddleware
 from backend.materials import (
     load_materials,
     get_material,
     search_materials,
     add_material,
 )
-
 from backend.schemas import MaterialCreate
-
-
 app = FastAPI(
     title="EM-Shield API",
     description="API for electromagnetic shielding simulations and material management.",
     version="0.1.0",
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

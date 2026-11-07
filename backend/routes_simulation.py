@@ -1,7 +1,6 @@
 """routes_simulation.py — FastAPI routes for pages 3-5; every number returned is computed here, never in the UI."""
 import numpy as np
 from fastapi import APIRouter, HTTPException
-from fastapi import FastAPI
 from routes_simulation import router as simulation_router
 
 from materials import list_materials, resolve_material
@@ -11,7 +10,6 @@ from simulation import (conductor_ratio, failing_ranges, single_layer, skin_dept
                         skin_depth_good_conductor)
 
 router = APIRouter(prefix="/api")
-app = FastAPI(title="EM-Shield API", ...)
 app.include_router(simulation_router)
 
 
@@ -28,9 +26,7 @@ def _resolve(layers):
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
 
-@app.get("/")
-def root():
-    ...
+
 @router.get("/materials")
 def get_materials():
     return list_materials()  # delete this route if Page 2 already provides it

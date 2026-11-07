@@ -12,7 +12,6 @@ from simulation import (conductor_ratio, failing_ranges, single_layer, skin_dept
 router = APIRouter(prefix="/api")
 app.include_router(simulation_router)
 
-
 def _num(x):
     """JSON cannot hold inf/nan: convert to None."""
     x = float(x)

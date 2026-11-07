@@ -6,4 +6,3 @@
   {"id":"nickel","name":"Nickel","sigma_s_per_m":1.4e7,"epsilon_r":1.0,"mu_r":100.0,"source":"Typical handbook sigma; mu_r depends strongly on frequency and processing (verify)","notes":"Constant mu_r is a simplification"},
   {"id":"fr4","name":"FR-4 (dielectric)","sigma_s_per_m":0.0,"epsilon_r":4.4,"mu_r":1.0,"source":"Typical datasheet value near 1 GHz (verify)","notes":"Lossless approximation"},
   {"id":"polycarbonate","name":"Polycarbonate (dielectric)","sigma_s_per_m":0.0,"epsilon_r":2.9,"mu_r":1.0,"source":"Typical datasheet value (verify)","notes":"Lossless approximation"}
-]

@@ -1,6 +1,7 @@
 // SingleLayer.jsx — Page 3: evaluate one uniform slab at one frequency (all numbers come from the Python backend).
 import { useState } from 'react';
-import MaterialSelect, { defaultMaterial, materialLabel, toMaterialSpec } from '../../components/MaterialSelect';
+import { useNavigate } from 'react-router-dom';
+import MaterialSelect, { defaultMaterial, materialLabel, toMaterialSpec } from '../../components/MaterialSelect';// SingleLayer.jsx — Page 3: evaluate one uniform slab at one frequency (all numbers come from the Python backend).
 import ResultCards from '../../components/ResultCards';
 import ResultsChart from '../../components/ResultsChart';
 import { useWorkspace } from '../../context/WorkspaceContext';
@@ -9,7 +10,8 @@ import { FREQ_UNITS, THICKNESS_UNITS, formatLength, toSI } from '../../utils/uni
 import '../../styles/pages345.css';
 
 export default function SingleLayer() {
-  const { materials, setActiveSingle } = useWorkspace();
+    const { materials, setActiveSingle } = useWorkspace();
+  const navigate = useNavigate();
   const [material, setMaterial] = useState(defaultMaterial());
   const [freq, setFreq] = useState('1');
   const [freqUnit, setFreqUnit] = useState('GHz');
@@ -92,13 +94,27 @@ export default function SingleLayer() {
                 Thickness is {result.thickness_over_skin_depth === null ? 'n/a' : result.thickness_over_skin_depth.toFixed(2)} skin depths;
                 σ/(ωε) = {result.conductor_ratio === null ? 'n/a' : result.conductor_ratio.toExponential(2)}.
                 Very large SE values are capped in the display; real shields are limited by seams and apertures, which this model excludes.
+            
+                The attenuation plot is a single-pass envelope and ignores internal reflections.
               </p>
+          
+             
+
               <ResultsChart
-                title="Field attenuation through the slab (single pass, internal reflections ignored)"
+                title="Field attenuation through the slab (single pass)"
                 x={result.profile_z_m.map((z) => z * 1e6)}
                 traces={[{ name: '|E(z)| / |E(0)|', y: result.profile_relative_amplitude }]}
                 xTitle="Depth into slab (µm)" yTitle="Relative amplitude"
               />
+
+               {/* hands the design just simulated to Page 5, which reads it from the shared workspace */}
+              <div className="em-next-step">
+                <button type="button" className="em-btn" onClick={() => navigate('/frequency-analysis')}>
+                  Analyse frequency response →
+                </button>
+                <p className="em-hint">Sweeps this {materialLabel(material, materials)} slab across a frequency band.</p>
+              </div>
+            
             </section>
           )}
         </div>

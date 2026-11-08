@@ -3,6 +3,7 @@
 |   |   |-- README.md
 |-- backend
 |   |-- physics
+|   |   |-- multilayer_solver_optimization.py
 |   |   |-- README.md
 |   |-- exports.py
 |   |-- main.py
@@ -67,5 +68,7 @@
 |   |-- README.md
 |   |-- test_simulation.py
 |-- .gitignore
+|-- DO_THIS_BEFORE_PUSHING
+|-- package-lock.json
 |-- project-structure.txt
 |-- README.md

@@ -8,7 +8,7 @@ class MaterialSpec(BaseModel):
     material_id: Optional[str] = None
     sigma_s_per_m: Optional[float] = Field(default=None, ge=0)
     epsilon_r: Optional[float] = Field(default=None, ge=1)
-    mu_r: Optional[float] = Field(default=None, ge=1)
+    mu_r: Optional[float] = Field(default=None, gt=0) 
 
     @model_validator(mode="after")
     def need_id_or_custom(self):

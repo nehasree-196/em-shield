@@ -1,12 +1,15 @@
+
 import { useEffect, useState } from "react";
 import {
   getMaterials,
   type Material,
   type MaterialCategory,
 } from "../../services/api";
+
 function formatProperty(value: number | null | undefined): string {
   return value == null ? "Not available" : value.toLocaleString();
 }
+
 export default function MaterialLibrary() {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [search, setSearch] = useState("");
@@ -28,12 +31,14 @@ export default function MaterialLibrary() {
         );
 
         if (!cancelled) {
-          setMaterials(data);
+          setMaterials(Array.isArray(data) ? data : []);
         }
       } catch (err) {
         if (!cancelled) {
           setError(
-            err instanceof Error ? err.message : "Failed to load materials."
+            err instanceof Error
+              ? err.message
+              : "Failed to load materials."
           );
         }
       } finally {
@@ -102,61 +107,83 @@ export default function MaterialLibrary() {
           gap: "16px",
         }}
       >
-        {materials.map((material) => (
-          <div
-            key={material.id}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: "10px",
-              padding: "18px",
-            }}
-          >
-            <h2>{material.name}</h2>
-            <p>Category: {material.category}</p>
+        {materials.map((material) => {
+          // Safely handle missing nested properties.
+          const properties = material.properties ?? {};
+          const sources = material.sources ?? [];
 
-            <h3>Electromagnetic Properties</h3>
-            <p>Conductivity:{" "}
-              {formatProperty(material.properties.conductivity_s_m)}
-              {material.properties.conductivity_s_m != null ? " S/m" : ""}
-            </p>
-            <p>Relative Permittivity:{" "}
-              {formatProperty(material.properties.relative_permittivity)}
-            </p>
-            <p>Relative Permeability:{" "}
-              {formatProperty(material.properties.relative_permeability)}
-            </p>
-            <p>Dielectric Loss Tangent:{" "}
-              {formatProperty(material.properties.dielectric_loss_tangent)}
-            </p>
-            <p>Magnetic Loss Tangent:{" "}
-              {formatProperty(material.properties.magnetic_loss_tangent)}
-            </p>
-            {material.reference_frequency_hz != null && (
+          return (
+            <div
+              key={material.id}
+              style={{
+                border: "1px solid #ddd",
+                borderRadius: "10px",
+                padding: "18px",
+              }}
+            >
+              <h2>{material.name}</h2>
+              <p>Category: {material.category ?? "Not specified"}</p>
+
+              <h3>Electromagnetic Properties</h3>
+
               <p>
-                Reference Frequency:{" "}
-                {material.reference_frequency_hz.toLocaleString()} Hz
+                Conductivity:{" "}
+                {formatProperty(properties.conductivity_s_m)}
+                {properties.conductivity_s_m != null ? " S/m" : ""}
               </p>
-            )}
 
-            {material.sources.length > 0 && (
-              <div>
-                <h3>Data Sources</h3>
-                {material.sources.map((source, index) => (
-                  <p key={`${source.property}-${index}`}>
-                    {source.property}:{" "}
-                    {source.url ? (
-                      <a href={source.url} target="_blank" rel="noreferrer">
-                        {source.reference}
-                      </a>
-                    ) : (
-                      source.reference
-                    )}
-                  </p>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+              <p>
+                Relative Permittivity:{" "}
+                {formatProperty(properties.relative_permittivity)}
+              </p>
+
+              <p>
+                Relative Permeability:{" "}
+                {formatProperty(properties.relative_permeability)}
+              </p>
+
+              <p>
+                Dielectric Loss Tangent:{" "}
+                {formatProperty(properties.dielectric_loss_tangent)}
+              </p>
+
+              <p>
+                Magnetic Loss Tangent:{" "}
+                {formatProperty(properties.magnetic_loss_tangent)}
+              </p>
+
+              {material.reference_frequency_hz != null && (
+                <p>
+                  Reference Frequency:{" "}
+                  {material.reference_frequency_hz.toLocaleString()} Hz
+                </p>
+              )}
+
+              {sources.length > 0 && (
+                <div>
+                  <h3>Data Sources</h3>
+
+                  {sources.map((source, index) => (
+                    <p key={`${source.property}-${index}`}>
+                      {source.property}:{" "}
+                      {source.url ? (
+                        <a
+                          href={source.url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {source.reference}
+                        </a>
+                      ) : (
+                        source.reference
+                      )}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

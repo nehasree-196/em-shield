@@ -1,0 +1,427 @@
+[{
+        "id": "copper_c11000",
+        "name": "Copper",
+        "category": "conductor",
+        "grade": "C11000 ETP - Annealed reference",
+        "composition": "Electrolytic tough pitch copper",
+        "properties": {
+            "conductivity_s_m": 58000000,
+            "relative_permittivity": null,
+            "relative_permeability": 0.9999906,
+            "dielectric_loss_tangent": null,
+            "magnetic_loss_tangent": null
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": 20,
+        "valid_frequency_min_hz": null,
+        "valid_frequency_max_hz": null,
+        "sources": [
+            {
+                "property": "conductivity_s_m",
+                "reference": "100% IACS reference conductivity: 58 MS/m at 20 °C"
+            },
+            {
+                "property": "relative_permeability",
+                "reference": "Representative room-temperature relative permeability: 0.9999906"
+            }
+        ],
+        "frequency_dependent_properties": []
+    },
+    {
+        "id": "aluminium_6061_t6",
+        "name": "Aluminium",
+        "category": "conductor",
+        "grade": "6061-T6",
+        "composition": "Aluminium alloy",
+        "properties": {
+            "conductivity_s_m": 24940000,
+            "relative_permittivity": null,
+            "relative_permeability": null,
+            "dielectric_loss_tangent": null,
+            "magnetic_loss_tangent": null
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": 20,
+        "valid_frequency_min_hz": null,
+        "valid_frequency_max_hz": null,
+        "sources": [
+            {
+                "property": "conductivity_s_m",
+                "reference": "6061-T6 conductivity: 43% IACS at 20 °C; converted using 100% IACS = 58 MS/m.",
+                "url": "https://www.nikkeikin-act.co.jp/technology/basic.html"
+            }
+        ],
+        "frequency_dependent_properties": []
+    },
+    {
+        "id": "silver_pure",
+        "name": "Silver",
+        "category": "conductor",
+        "grade": "High-purity silver",
+        "composition": "Silver",
+        "properties": {
+            "conductivity_s_m": 63000000,
+            "relative_permittivity": null,
+            "relative_permeability": null,
+            "dielectric_loss_tangent": null,
+            "magnetic_loss_tangent": null
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": 20,
+        "valid_frequency_min_hz": null,
+        "valid_frequency_max_hz": null,
+        "sources": [
+            {
+                "property": "conductivity_s_m",
+                "reference": "Representative pure-silver conductivity at 20 °C: 6.30 × 10^7 S/m.",
+                "url": "https://spark.iop.org/conductivity-electrical"
+            }
+        ],
+        "frequency_dependent_properties": []
+    },
+    {
+        "id": "brass_c26000",
+        "name": "Brass",
+        "category": "conductor",
+        "grade": "C26000",
+        "composition": "Cartridge brass",
+        "properties": {
+            "conductivity_s_m": 16200000,
+            "relative_permittivity": null,
+            "relative_permeability": null,
+            "dielectric_loss_tangent": null,
+            "magnetic_loss_tangent": null
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": 20,
+        "valid_frequency_min_hz": null,
+        "valid_frequency_max_hz": null,
+        "sources": [
+            {
+                "property": "conductivity_s_m",
+                "reference": "C26000 cartridge brass conductivity: 0.162 MS/cm at 20 °C (28% IACS).",
+                "url": "https://www.concast.com/c26000.php"
+            }
+        ],
+        "frequency_dependent_properties": []
+    },
+    {
+        "id": "nickel_200",
+        "name": "Nickel",
+        "category": "conductor",
+        "grade": "Nickel 200",
+        "composition": "Commercially pure nickel",
+        "properties": {
+            "conductivity_s_m": 10416667,
+            "relative_permittivity": null,
+            "relative_permeability": null,
+            "dielectric_loss_tangent": null,
+            "magnetic_loss_tangent": null
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": 20,
+        "valid_frequency_min_hz": null,
+        "valid_frequency_max_hz": null,
+        "sources": [
+            {
+                "property": "conductivity_s_m",
+                "reference": "Nickel 200 electrical resistivity: 9.6 μΩ·cm at 20 °C; conductivity calculated as 1/ρ.",
+                "url": "https://sunmach.net/pdf/NICKEL_200.pdf"
+            }
+        ],
+        "frequency_dependent_properties": []
+    },
+    {
+        "id": "mumetal_astm_a753",
+        "name": "Mu-metal",
+        "category": "magnetic",
+        "grade": "ASTM A753",
+        "composition": "Nickel-iron-molybdenum alloy; typical composition includes 80-82% nickel and 3.5-6% molybdenum",
+        "properties": {
+            "conductivity_s_m": 1666667,
+            "relative_permittivity": null,
+            "relative_permeability": null,
+            "dielectric_loss_tangent": null,
+            "magnetic_loss_tangent": null
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": 20,
+        "valid_frequency_min_hz": null,
+        "valid_frequency_max_hz": null,
+        "sources": [
+            {
+                "property": "composition",
+                "reference": "MuMETAL technical data",
+                "url": "https://www.mu-metal.com/technical-data.html"
+            },
+            {
+                "property": "conductivity_s_m",
+                "reference": "Typical MuMETAL resistivity: 60 μΩ·cm; conductivity calculated as 1/ρ. Typical physical property, lot and condition dependent.",
+                "url": "https://www.mu-metal.com/technical-data.html"
+            }
+        ],
+        "frequency_dependent_properties": []
+    },
+    {
+        "id": "silicon_steel",
+        "name": "Silicon Steel",
+        "category": "magnetic",
+        "grade": "Electrical steel",
+        "composition": "Iron-silicon magnetic alloy; specific grade not yet selected",
+        "properties": {
+            "conductivity_s_m": null,
+            "relative_permittivity": null,
+            "relative_permeability": null,
+            "dielectric_loss_tangent": null,
+            "magnetic_loss_tangent": null
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": null,
+        "valid_frequency_min_hz": null,
+        "valid_frequency_max_hz": null,
+        "sources": [],
+        "frequency_dependent_properties": []
+    },
+    {
+        "id": "ferrite_nizn_44",
+        "name": "Nickel-Zinc Ferrite",
+        "category": "magnetic",
+        "grade": "Fair-Rite 44",
+        "composition": "Nickel-zinc ferrite",
+        "properties": {
+            "conductivity_s_m": null,
+            "relative_permittivity": null,
+            "relative_permeability": null,
+            "dielectric_loss_tangent": null,
+            "magnetic_loss_tangent": null
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": null,
+        "valid_frequency_min_hz": null,
+        "valid_frequency_max_hz": null,
+        "sources": [
+            {
+                "property": "frequency_application_range",
+                "reference": "Fair-Rite 44 is specified for suppression performance from 30 MHz to 500 MHz; this is an application range, not a numeric permeability dataset.",
+                "url": "https://fair-rite.com/44-material-data-sheet/"
+            }
+        ],
+        "frequency_dependent_properties": []
+    },
+    {
+        "id": "ferrite_mnzn",
+        "name": "Manganese-Zinc Ferrite",
+        "category": "magnetic",
+        "grade": "Representative MnZn ferrite; specific grade not yet selected",
+        "composition": "Manganese-zinc ferrite",
+        "properties": {
+            "conductivity_s_m": null,
+            "relative_permittivity": null,
+            "relative_permeability": null,
+            "dielectric_loss_tangent": null,
+            "magnetic_loss_tangent": null
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": null,
+        "valid_frequency_min_hz": null,
+        "valid_frequency_max_hz": null,
+        "sources": [],
+        "frequency_dependent_properties": []
+    },
+    {
+        "id": "mild_steel",
+        "name": "Mild Steel",
+        "category": "magnetic",
+        "grade": "Low-carbon steel",
+        "composition": "Iron-based low-carbon steel",
+        "properties": {
+            "conductivity_s_m": null,
+            "relative_permittivity": null,
+            "relative_permeability": null,
+            "dielectric_loss_tangent": null,
+            "magnetic_loss_tangent": null
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": null,
+        "valid_frequency_min_hz": null,
+        "valid_frequency_max_hz": null,
+        "sources": [],
+        "frequency_dependent_properties": []
+    },
+    {
+        "id": "stainless_steel_304",
+        "name": "Stainless Steel 304",
+        "category": "conductor",
+        "grade": "AISI 304",
+        "composition": "Austenitic stainless steel",
+        "properties": {
+            "conductivity_s_m": null,
+            "relative_permittivity": null,
+            "relative_permeability": null,
+            "dielectric_loss_tangent": null,
+            "magnetic_loss_tangent": null
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": null,
+        "valid_frequency_min_hz": null,
+        "valid_frequency_max_hz": null,
+        "sources": [],
+        "frequency_dependent_properties": []
+    },
+    {
+        "id": "graphite_industrial",
+        "name": "Graphite",
+        "category": "conductor",
+        "grade": "Industrial graphite",
+        "composition": "Carbon-based graphite; grade and density unspecified",
+        "properties": {
+            "conductivity_s_m": null,
+            "relative_permittivity": null,
+            "relative_permeability": null,
+            "dielectric_loss_tangent": null,
+            "magnetic_loss_tangent": null
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": null,
+        "valid_frequency_min_hz": null,
+        "valid_frequency_max_hz": null,
+        "sources": [],
+        "frequency_dependent_properties": []
+    },
+    {
+        "id": "carbon_fibre_epoxy",
+        "name": "Carbon-Fibre Composite",
+        "category": "other",
+        "grade": "Carbon-fibre/epoxy composite",
+        "composition": "Carbon fibres embedded in epoxy resin; layup unspecified",
+        "properties": {
+            "conductivity_s_m": null,
+            "relative_permittivity": null,
+            "relative_permeability": null,
+            "dielectric_loss_tangent": null,
+            "magnetic_loss_tangent": null
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": null,
+        "valid_frequency_min_hz": null,
+        "valid_frequency_max_hz": null,
+        "sources": [],
+        "frequency_dependent_properties": []
+    },
+    {
+        "id": "conductive_polymer_composite",
+        "name": "Conductive Polymer Composite",
+        "category": "other",
+        "grade": "Carbon-filled polymer",
+        "composition": "Polymer matrix with conductive carbon filler; formulation unspecified",
+        "properties": {
+            "conductivity_s_m": null,
+            "relative_permittivity": null,
+            "relative_permeability": null,
+            "dielectric_loss_tangent": null,
+            "magnetic_loss_tangent": null
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": null,
+        "valid_frequency_min_hz": null,
+        "valid_frequency_max_hz": null,
+        "sources": [],
+        "frequency_dependent_properties": []
+    },
+    {
+        "id": "ptfe_virgin",
+        "name": "PTFE",
+        "category": "insulator",
+        "grade": "Virgin PTFE",
+        "composition": "Polytetrafluoroethylene",
+        "properties": {
+            "conductivity_s_m": null,
+            "relative_permittivity": null,
+            "relative_permeability": null,
+            "dielectric_loss_tangent": null,
+            "magnetic_loss_tangent": null
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": null,
+        "valid_frequency_min_hz": 100000000,
+        "valid_frequency_max_hz": 100000000,
+        "sources": [],
+        "frequency_dependent_properties": [
+            {
+                "frequency_hz": 100000000,
+                "properties": {
+                    "conductivity_s_m": null,
+                    "relative_permittivity": 2.1,
+                    "relative_permeability": null,
+                    "dielectric_loss_tangent": 0.0002,
+                    "magnetic_loss_tangent": null
+                },
+                "temperature_c": null,
+                "sources": [
+                    {
+                        "property": "relative_permittivity and dielectric_loss_tangent",
+                        "reference": "MathWorks Dielectric Catalog - Teflon, 100 MHz",
+                        "url": "https://www.mathworks.com/help/antenna/dielectric-catalog.html"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "fr4_isola_185hr",
+        "name": "FR-4",
+        "category": "insulator",
+        "grade": "Isola 185HR; 1x1080, 60% resin-content core reference",
+        "composition": "Glass-reinforced epoxy laminate",
+        "properties": {
+            "conductivity_s_m": null,
+            "relative_permittivity": null,
+            "relative_permeability": null,
+            "dielectric_loss_tangent": null,
+            "magnetic_loss_tangent": null
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": null,
+        "valid_frequency_min_hz": 100000000,
+        "valid_frequency_max_hz": 1000000000,
+        "sources": [],
+        "frequency_dependent_properties": [
+            {
+                "frequency_hz": 100000000,
+                "properties": {
+                    "conductivity_s_m": null,
+                    "relative_permittivity": 4.06,
+                    "relative_permeability": null,
+                    "dielectric_loss_tangent": 0.0164,
+                    "magnetic_loss_tangent": null
+                },
+                "temperature_c": null,
+                "sources": [
+                    {
+                        "property": "relative_permittivity and dielectric_loss_tangent",
+                        "reference": "Isola 185HR DK/DF table, 1x1080 standard core, 60% resin content, 100 MHz.",
+                        "url": "https://www.isola-group.com/wp-content/uploads/data-sheets/185HR__Dk_Df_Tables.pdf"
+                    }
+                ]
+            },
+            {
+                "frequency_hz": 1000000000,
+                "properties": {
+                    "conductivity_s_m": null,
+                    "relative_permittivity": 3.96,
+                    "relative_permeability": null,
+                    "dielectric_loss_tangent": 0.0201,
+                    "magnetic_loss_tangent": null
+                },
+                "temperature_c": null,
+                "sources": [
+                    {
+                        "property": "relative_permittivity and dielectric_loss_tangent",
+                        "reference": "Isola 185HR DK/DF table, 1x1080 standard core, 60% resin content, 1 GHz.",
+                        "url": "https://www.isola-group.com/wp-content/uploads/data-sheets/185HR__Dk_Df_Tables.pdf"
+                    }
+                ]
+            }
+        ]
+    }
+]

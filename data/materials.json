@@ -1,1 +1,65 @@
-[]
+[
+  {
+    "id": "copper",
+    "name": "Copper",
+    "sigma_s_per_m": 58000000.0,
+    "epsilon_r": 1.0,
+    "mu_r": 1.0,
+    "source": "Annealed copper, IACS standard (5.8e7 S/m)",
+    "notes": "Non-magnetic"
+  },
+  {
+    "id": "aluminium",
+    "name": "Aluminium",
+    "sigma_s_per_m": 35000000.0,
+    "epsilon_r": 1.0,
+    "mu_r": 1.0,
+    "source": "Typical handbook value for pure aluminium (verify)",
+    "notes": "Non-magnetic"
+  },
+  {
+    "id": "stainless_304",
+    "name": "Stainless steel 304",
+    "sigma_s_per_m": 1400000.0,
+    "epsilon_r": 1.0,
+    "mu_r": 1.0,
+    "source": "Typical handbook value for austenitic 304 (verify)",
+    "notes": "Treated as non-magnetic; ferritic grades have high mu_r"
+  },
+  {
+    "id": "silver",
+    "name": "Silver",
+    "sigma_s_per_m": 63000000.0,
+    "epsilon_r": 1.0,
+    "mu_r": 1.0,
+    "source": "Typical handbook value (verify)",
+    "notes": "Non-magnetic"
+  },
+  {
+    "id": "nickel",
+    "name": "Nickel",
+    "sigma_s_per_m": 14000000.0,
+    "epsilon_r": 1.0,
+    "mu_r": 100.0,
+    "source": "Typical handbook sigma; mu_r varies with frequency and processing (verify)",
+    "notes": "Constant mu_r is a simplification"
+  },
+  {
+    "id": "fr4",
+    "name": "FR-4 (dielectric)",
+    "sigma_s_per_m": 0.0,
+    "epsilon_r": 4.4,
+    "mu_r": 1.0,
+    "source": "Typical datasheet value near 1 GHz (verify)",
+    "notes": "Lossless approximation"
+  },
+  {
+    "id": "polycarbonate",
+    "name": "Polycarbonate (dielectric)",
+    "sigma_s_per_m": 0.0,
+    "epsilon_r": 2.9,
+    "mu_r": 1.0,
+    "source": "Typical datasheet value (verify)",
+    "notes": "Lossless approximation"
+  }
+]

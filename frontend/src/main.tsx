@@ -6,9 +6,13 @@ import ReactDOM from "react-dom/client";                            //this is us
 import App from "./App";
 // @ts-ignore CSS imports are handled by the bundler.
 import "./styles/global.css";                                       //this imports the global css for this application
+// @ts-ignore the workspace context is written in JavaScript
+import { WorkspaceProvider } from "./context/WorkspaceContext";     //shared state (materials list, active designs) used by pages 3-5
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <WorkspaceProvider>
+      <App />
+    </WorkspaceProvider>
   </React.StrictMode>
 );

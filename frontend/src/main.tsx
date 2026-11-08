@@ -6,9 +6,12 @@ import ReactDOM from "react-dom/client";                            //this is us
 import App from "./App";
 // @ts-ignore CSS imports are handled by the bundler.
 import "./styles/global.css";                                       //this imports the global css for this application
+import { WorkspaceProvider } from "./context/WorkspaceContext";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
+ <React.StrictMode>
+  <WorkspaceProvider>
     <App />
-  </React.StrictMode>
+  </WorkspaceProvider>
+</React.StrictMode>
 );

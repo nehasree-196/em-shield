@@ -3,8 +3,8 @@ import numpy as np
 from fastapi import APIRouter, HTTPException
 
 from materials import list_materials, resolve_material
-from multilayer import stack_response, sweep
-from schemas import MultilayerRequest, SingleLayerRequest, SweepRequest
+from multilayer import sweep
+from schemas import SingleLayerRequest, SweepRequest
 from simulation import (conductor_ratio, failing_ranges, single_layer, skin_depth,
                         skin_depth_good_conductor)
 
@@ -58,25 +58,6 @@ def run_single_layer(req: SingleLayerRequest):
         "profile_relative_amplitude": np.exp(-alpha * z).tolist(),
     }
 
-
-@router.post("/multilayer")
-def run_multilayer(req: MultilayerRequest):
-    stack, labels = _resolve(req.layers)
-    res = stack_response(np.array([req.frequency_hz]), stack)
-    meta = []
-    for i, ((s, e, m, d), name) in enumerate(zip(stack, labels), start=1):
-        delta = skin_depth(np.array([req.frequency_hz]), s, e, m)[0]
-        meta.append({"order": i, "material": name, "thickness_m": d, "skin_depth_m": _num(delta)})
-    return {
-        "frequency_hz": req.frequency_hz,
-        "layer_count": len(stack),
-        "total_thickness_m": float(sum(l[3] for l in stack)),
-        "stack": meta,
-        "reflection_power": float(res["reflection_power"][0]),
-        "transmission_power": float(res["transmission_power"][0]),
-        "absorption_power": float(res["absorption_power"][0]),
-        "shielding_effectiveness_db": float(res["shielding_effectiveness_db"][0]),
-    }
 
 
 @router.post("/sweep")

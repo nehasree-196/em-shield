@@ -1,3 +1,6 @@
+"""Placeholder FastAPI entry point for EM-Shield."""
+
+from routes_simulation import router as simulation_router
 """FastAPI entry point for EM-Shield."""
 
 from fastapi import FastAPI, HTTPException, Query
@@ -14,6 +17,7 @@ app = FastAPI(
     description="API for electromagnetic shielding simulations and material management.",
     version="0.1.0",
 )
+app.include_router(simulation_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[

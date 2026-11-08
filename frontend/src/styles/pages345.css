@@ -1,0 +1,35 @@
+/* pages345.css — styles for the Single-Layer, Multilayer and Frequency Analysis pages (prefixed em- to avoid clashes). */
+.em-page { display: flex; flex-direction: column; gap: 20px; padding: 24px; max-width: 1200px; }
+.em-page h1 { margin: 0; font-size: 1.6rem; color: #2a1a66; }
+.em-grid { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
+@media (max-width: 900px) { .em-grid { grid-template-columns: 1fr; } }
+.em-panel { background: rgba(255,255,255,0.7); border: 1px solid #d3d9f7; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.em-panel h2 { margin: 0; font-size: 1.05rem; color: #2a1a66; }
+.em-field-group, .em-layers { display: flex; flex-direction: column; gap: 8px; }
+.em-input { padding: 8px 10px; border: 1px solid #b9c0ea; border-radius: 8px; font: inherit; background: #fff; width: 100%; box-sizing: border-box; }
+.em-input:focus-visible, button:focus-visible { outline: 2px solid #5b3df5; outline-offset: 2px; }
+.em-inline { display: flex; gap: 8px; }
+.em-custom-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 0.8rem; color: #3b3b5c; }
+.em-btn { background: #5b3df5; color: #fff; border: 0; border-radius: 10px; padding: 11px 16px; font: inherit; font-weight: 600; cursor: pointer; }
+.em-btn:disabled { opacity: 0.6; cursor: wait; }
+.em-btn-secondary, .em-btn-small { background: #fff; color: #3a2a99; border: 1px solid #b9c0ea; border-radius: 8px; padding: 8px 12px; font: inherit; cursor: pointer; }
+.em-btn-small { padding: 4px 8px; font-size: 0.8rem; }
+.em-btn-small:disabled { opacity: 0.4; cursor: default; }
+.em-error { color: #b42318; margin: 0; }
+.em-hint { color: #3b3b5c; font-size: 0.85rem; margin: 0; }
+.em-assumptions { font-size: 0.85rem; color: #2b2b4a; margin: 0; padding-left: 18px; }
+.em-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.em-card { background: #fff; border: 1px solid #d3d9f7; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+.em-card-label { font-size: 0.8rem; color: #3b3b5c; }
+.em-card-value { font-size: 1.2rem; color: #2a1a66; }
+.em-slab { height: 90px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; background: linear-gradient(90deg, #7b63ff, #4a2fd1); text-align: center; padding: 0 8px; }
+.em-layer { display: grid; grid-template-columns: 28px 1fr; gap: 8px; padding: 10px; border: 1px solid #d3d9f7; border-radius: 10px; background: #fff; }
+.em-layer > * { grid-column: 2; }
+.em-layer-index { grid-column: 1; grid-row: 1 / span 3; font-weight: 700; color: #5b3df5; }
+.em-table-wrap { max-height: 280px; overflow: auto; border: 1px solid #d3d9f7; border-radius: 8px; background: #fff; }
+.em-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.em-table th, .em-table td { padding: 6px 10px; text-align: right; border-bottom: 1px solid #eceffc; }
+.em-table th:first-child, .em-table td:first-child { text-align: left; }
+.em-notice { background: #fff7e0; border: 1px solid #f0d78a; border-radius: 10px; padding: 12px; color: #5c4400; }
+.em-results { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.em-next-step { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 12px 0; }

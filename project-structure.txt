@@ -5,6 +5,10 @@
 |   |-- physics
 |   |   |-- multilayer_solver_optimization.py
 |   |   |-- README.md
+|   |-- tests
+|   |   |-- conftest.py
+|   |   |-- test_multilayer.py
+|   |   |-- test_simulation.py
 |   |-- exports.py
 |   |-- main.py
 |   |-- materials.py
@@ -12,10 +16,12 @@
 |   |-- optimization.py
 |   |-- README.md
 |   |-- requirements.txt
+|   |-- routes_simulation.py
 |   |-- schemas.py
 |   |-- simulation.py
 |-- data
 |   |-- materials.json
+|   |-- materials_page2.json
 |-- docs
 |   |-- README.md
 |-- frontend
@@ -26,9 +32,13 @@
 |   |   |   |-- layout
 |   |   |   |   |-- AppLayout.tsx
 |   |   |   |   |-- Sidebar.tsx
+|   |   |   |-- MaterialSelect.jsx
 |   |   |   |-- README.md
+|   |   |   |-- ResultCards.jsx
+|   |   |   |-- ResultsChart.jsx
 |   |   |-- context
 |   |   |   |-- README.md
+|   |   |   |-- WorkspaceContext.jsx
 |   |   |-- pages
 |   |   |   |-- page1_dashboard
 |   |   |   |   |-- Dashboard.tsx
@@ -38,12 +48,12 @@
 |   |   |   |   |-- README.md
 |   |   |   |-- page3_single_layer
 |   |   |   |   |-- README.md
-|   |   |   |   |-- SingleLayer.tsx
+|   |   |   |   |-- SingleLayer.jsx
 |   |   |   |-- page4_multilayer
 |   |   |   |   |-- Multilayer.tsx
 |   |   |   |   |-- README.md
 |   |   |   |-- page5_frequency_analysis
-|   |   |   |   |-- FrequencyAnalysis.tsx
+|   |   |   |   |-- FrequencyAnalysis.jsx
 |   |   |   |   |-- README.md
 |   |   |   |-- page6_optimization
 |   |   |   |   |-- Optimization.tsx
@@ -52,20 +62,37 @@
 |   |   |   |   |-- README.md
 |   |   |   |   |-- ResultsExport.tsx
 |   |   |-- services
+|   |   |   |-- api.js
 |   |   |   |-- api.ts
 |   |   |-- styles
 |   |   |   |-- global.css
+|   |   |   |-- pages345.css
 |   |   |-- types
 |   |   |   |-- README.md
+|   |   |-- utils
+|   |   |   |-- units.js
 |   |   |-- App.tsx
 |   |   |-- main.tsx
+|   |-- FrequencyAnalysis.jsx
 |   |-- index.html
+|   |-- LayerEditor.jsx
+|   |-- MaterialSelect.jsx
+|   |-- Multilayer.jsx
 |   |-- package.json
 |   |-- package-lock.json
 |   |-- README.md
+|   |-- ResultCards.jsx
+|   |-- ResultsChart.jsx
+|   |-- SingleLayer.jsx
+|   |-- tsconfig.app.json
+|   |-- tsconfig.json
+|   |-- tsconfig.node.json
 |   |-- vite.config.ts
+|   |-- WorkspaceContext.jsx
 |-- tests
+|   |-- conftest.py
 |   |-- README.md
+|   |-- test_multilayer.py
 |   |-- test_simulation.py
 |-- .gitignore
 |-- DO_THIS_BEFORE_PUSHING

@@ -32,3 +32,4 @@
 .em-table th:first-child, .em-table td:first-child { text-align: left; }
 .em-notice { background: #fff7e0; border: 1px solid #f0d78a; border-radius: 10px; padding: 12px; color: #5c4400; }
 .em-results { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.em-next-step { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 12px 0; }

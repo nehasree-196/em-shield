@@ -1,6 +1,6 @@
 """Placeholder FastAPI entry point for EM-Shield."""
 
-from routes_simulation import router as simulation_router
+from backend.routes_simulation import router as simulation_router
 """FastAPI entry point for EM-Shield."""
 
 from fastapi import FastAPI, HTTPException, Query

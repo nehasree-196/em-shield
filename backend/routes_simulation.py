@@ -2,11 +2,11 @@
 import numpy as np
 from fastapi import APIRouter, HTTPException
 
-from materials import list_materials, resolve_material
-from multilayer import sweep
-from schemas import SingleLayerRequest, SweepRequest
-from simulation import (conductor_ratio, failing_ranges, single_layer, skin_depth,
-                        skin_depth_good_conductor)
+from backend.materials import list_materials, resolve_material
+from backend.multilayer import sweep
+from backend.schemas import SingleLayerRequest, SweepRequest
+from backend.simulation import (conductor_ratio, failing_ranges, single_layer, skin_depth,
+                                skin_depth_good_conductor)
 
 router = APIRouter(prefix="/api")
 

@@ -1,6 +1,6 @@
 """multilayer.py — transfer-matrix method for stacks of uniform planar layers (normal incidence, air on both sides)."""
 import numpy as np
-from simulation import ETA0, layer_properties, pack_result
+from backend.simulation import ETA0, layer_properties, pack_result
 
 
 def stack_response(freq_hz, layers):

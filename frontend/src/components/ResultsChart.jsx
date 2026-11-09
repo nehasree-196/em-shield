@@ -2,7 +2,9 @@
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js-basic-dist';
 
-const Plot = createPlotlyComponent(Plotly);
+// some bundlers wrap CommonJS packages in {default: ...}; handle both shapes
+const factory = createPlotlyComponent.default || createPlotlyComponent;
+const Plot = factory(Plotly.default || Plotly);
 const COLORS = ['#5b3df5', '#e0457b', '#1f9d8a', '#d98e04'];
 
 // traces: [{name, y}], x: array, failRanges: [{start_hz,end_hz}] shaded red, target: dB line

@@ -2,8 +2,6 @@
 |   |-- workflows
 |   |   |-- README.md
 |-- backend
-|   |-- data
-|   |   |-- materials.json
 |   |-- physics
 |   |   |-- multilayer_solver_optimization.py
 |   |   |-- README.md
@@ -23,6 +21,7 @@
 |   |-- simulation.py
 |-- data
 |   |-- materials.json
+|   |-- materials_page2.json
 |-- docs
 |   |-- README.md
 |-- frontend
@@ -85,6 +84,9 @@
 |   |-- ResultCards.jsx
 |   |-- ResultsChart.jsx
 |   |-- SingleLayer.jsx
+|   |-- tsconfig.app.json
+|   |-- tsconfig.json
+|   |-- tsconfig.node.json
 |   |-- vite.config.ts
 |   |-- WorkspaceContext.jsx
 |-- tests

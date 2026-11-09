@@ -1,9 +1,5 @@
 
-"""Material data access for Page 2 and Page 3.
-
-Page 2 uses the nested MaterialCreate schema.
-Page 3 uses the flat electromagnetic material format.
-"""
+"""Material-data access helpers: load the JSON library and resolve a material reference."""
 
 import json
 from pathlib import Path

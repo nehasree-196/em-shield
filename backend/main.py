@@ -1,5 +1,4 @@
-
-"""FastAPI entry point for EM-Shield."""
+"""FastAPI entry point for EM-Shield; simulation routes for pages 3-5 are registered below."""
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,6 +21,17 @@ app = FastAPI(
     version="0.1.0",
 )
 
+# allow the Vite dev server (port 5173) to call this API
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# single-layer, multilayer and sweep endpoints
+app.include_router(simulation_router)
+
 
 # Page 3 simulation routes
 app.include_router(simulation_router)
@@ -43,8 +53,8 @@ app.add_middleware(
 def root():
     return {
         "name": "EM-Shield API",
-        "status": "running",
-        "message": "EM-Shield backend is working.",
+        "status": "placeholder",
+        "message": "Simulation endpoints are available under /api.",
     }
 
 

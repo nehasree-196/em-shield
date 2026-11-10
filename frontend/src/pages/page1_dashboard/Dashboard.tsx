@@ -59,15 +59,8 @@ export default function Dashboard() {
 
   const handleSimulationSelection = (mode: string) => {
     setShowPopup(false);
-
-    // Route directly to the specific simulation or optimization page
-    if (mode === "single-layer") {
-      navigate("/single-layer");
-    } else if (mode === "multilayer") {
-      navigate("/multilayer");
-    } else if (mode === "optimization") {
-      navigate("/optimization");
-    }
+    // Send all modes to the materials page first
+    navigate(`/materials?mode=${mode}`);
   };
 
   return (

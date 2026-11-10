@@ -4,7 +4,7 @@
 import json
 from pathlib import Path
 
-from backend.schemas import MaterialCreate
+from schemas import MaterialCreate
 
 
 DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "materials_final.json"

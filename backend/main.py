@@ -2,13 +2,13 @@
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from backend.materials import (
+from materials import (
     load_materials,
     get_material,
     search_materials,
     add_material,
 )
-from backend.schemas import MaterialCreate
+from schemas import MaterialCreate
 app = FastAPI(
     title="EM-Shield API",
     description="API for electromagnetic shielding simulations and material management.",

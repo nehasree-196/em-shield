@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -61,7 +60,13 @@ export default function Dashboard() {
   const handleSimulationSelection = (mode: string) => {
     setShowPopup(false);
 
-    navigate(`/materials?mode=${mode}`);
+    // Route optimization directly to the Page 6 optimizer
+    if (mode === "optimization") {
+      navigate("/optimization");
+    } else {
+      // For single-layer and multilayer, go to material selection first
+      navigate(`/materials?mode=${mode}`);
+    }
   };
 
   return (

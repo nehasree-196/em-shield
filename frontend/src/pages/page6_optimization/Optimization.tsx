@@ -11,11 +11,13 @@ import { FilterPanel } from "./components/FilterPanel";
 
 const DEFAULTS: OptimizationRequest = {
   materials: [],
-  target_se_db: 40,
-  frequency_min_hz: 1e6,
-  frequency_max_hz: 1e9,
+  target_se_db: undefined,
+  frequency_min_hz: undefined,
+  frequency_max_hz: undefined,
   max_incidence_angle_deg: 0,
   max_layers: 3,
+  default_min_layer_thickness_m: undefined,
+  default_max_layer_thickness_m: undefined,
   objective: "thickness",
   must_include_ids: [],
   top_k: 10,
@@ -44,7 +46,53 @@ export default function Optimization() {
     [result, selectedRank]
   );
 
+  const validateRequest = (): string | null => {
+    if (req.materials.length === 0) return "⚠️ Please select at least one material to optimize.";
+
+    const missing: string[] = [];
+    if (req.target_se_db === undefined) missing.push("Target SE");
+    if (req.frequency_min_hz === undefined) missing.push("F min");
+    if (req.frequency_max_hz === undefined) missing.push("F max");
+    if (req.max_incidence_angle_deg === undefined) missing.push("Max angle");
+    if (req.max_layers === undefined) missing.push("Max layers");
+    if (req.top_k === undefined) missing.push("Top K");
+    if (req.safety_margin_db === undefined) missing.push("Safety margin");
+
+    if (missing.length > 0) {
+      return `⚠️ Missing required fields: ${missing.join(", ")}.`;
+    }
+
+    if (req.target_se_db! <= 0) return "⚠️ Target SE must be greater than 0 dB.";
+    if (req.frequency_min_hz! <= 0 || req.frequency_max_hz! <= 0) return "⚠️ Frequencies must be positive numbers.";
+    if (req.frequency_min_hz! >= req.frequency_max_hz!) return "⚠️ Minimum frequency cannot be greater than or equal to maximum frequency.";
+    if (req.max_incidence_angle_deg! < 0 || req.max_incidence_angle_deg! > 85) return "⚠️ Max angle must be between 0° and 85°.";
+    if (req.max_layers! < 1 || req.max_layers! > 6) return "⚠️ Max layers must be between 1 and 6.";
+    if (req.top_k! < 1) return "⚠️ Top K must be at least 1.";
+    
+    if (req.default_min_layer_thickness_m !== undefined && req.default_min_layer_thickness_m <= 0) {
+      return "⚠️ Min layer thickness must be greater than 0.";
+    }
+    if (req.default_max_layer_thickness_m !== undefined && req.default_max_layer_thickness_m <= 0) {
+      return "⚠️ Max layer thickness must be greater than 0.";
+    }
+    if (
+      req.default_min_layer_thickness_m !== undefined && 
+      req.default_max_layer_thickness_m !== undefined && 
+      req.default_min_layer_thickness_m > req.default_max_layer_thickness_m
+    ) {
+      return "⚠️ Min layer thickness cannot be greater than max layer thickness.";
+    }
+
+    return null;
+  };
+
   const run = useCallback(async () => {
+    const validationError = validateRequest();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setBusy(true);
     setError(null);
     setResult(null);
@@ -70,7 +118,7 @@ export default function Optimization() {
   const displayedCandidates = useMemo(() => {
     if (!result) return [];
     if (showAllCandidates) return result.candidates;
-    return result.candidates.slice(0, req.top_k);
+    return result.candidates.slice(0, req.top_k || 10);
   }, [result, showAllCandidates, req.top_k]);
 
   return (
@@ -89,7 +137,7 @@ export default function Optimization() {
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
           <button
             className="primary-button"
-            disabled={busy || req.materials.length === 0}
+            disabled={busy}
             onClick={run}
             style={{ minWidth: "160px" }}
           >
@@ -97,15 +145,12 @@ export default function Optimization() {
             {busy ? "Searching..." : "Run optimization"}
           </button>
           
-          {busy && (
-            <div className="opt-timer">
-              {elapsed.toFixed(1)}s
-            </div>
-          )}
+          {busy && <div className="opt-timer">{elapsed.toFixed(1)}s</div>}
         </div>
       </header>
 
-      {error && <div className="opt-banner is-error">{error}</div>}
+      {/* ERROR BANNER - This will show validation messages prominently */}
+      {error && <div className="opt-banner is-error" style={{ fontSize: "14px", fontWeight: 600 }}>{error}</div>}
 
       <div style={{ maxWidth: "1300px", margin: "0 auto", width: "100%" }}>
         <div className="opt-layout">
@@ -134,10 +179,9 @@ export default function Optimization() {
                   runId={result.run_id}
                   availableMaterials={req.materials}
                   onFiltered={(candidates) => {
-                    // Update the result with the newly filtered candidates
                     setResult({ ...result, candidates, distinct_candidates_found: candidates.length });
                     setSelectedRank(candidates[0]?.rank ?? null);
-                    setShowAllCandidates(false); // Reset view to top K after filtering
+                    setShowAllCandidates(false);
                   }}
                 />
               </>
@@ -173,15 +217,14 @@ export default function Optimization() {
                     objective={result.objective}
                   />
 
-                  {/* View All / View Less Button */}
-                  {result.candidates.length > req.top_k && (
+                  {result.candidates.length > (req.top_k || 10) && (
                     <div style={{ textAlign: "center", marginTop: 16 }}>
                       <button
                         className="secondary-button"
                         onClick={() => setShowAllCandidates(!showAllCandidates)}
                       >
                         {showAllCandidates 
-                          ? `Show top ${req.top_k} only`
+                          ? `Show top ${req.top_k || 10} only`
                           : `View all ${result.candidates.length} candidates`}
                       </button>
                     </div>

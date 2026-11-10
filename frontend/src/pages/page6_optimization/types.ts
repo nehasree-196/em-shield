@@ -1,5 +1,3 @@
-// Shared types for the Page 6 optimization UI. Mirrors the backend Pydantic schemas.
-
 export type Material = {
   id: string;
   name?: string;
@@ -20,20 +18,19 @@ export type Material = {
 
 export type OptimizationRequest = {
   materials: Material[];
-  target_se_db: number;
-  frequency_min_hz: number;
-  frequency_max_hz: number;
-  max_incidence_angle_deg: number;
-  max_layers: number;
-  max_total_thickness_m?: number;
+  target_se_db?: number;
+  frequency_min_hz?: number;
+  frequency_max_hz?: number;
+  max_incidence_angle_deg?: number;
+  max_layers?: number;
   default_min_layer_thickness_m?: number;
   default_max_layer_thickness_m?: number;
   objective: "thickness" | "mass";
   max_mass_kg_m2?: number;
   must_include_ids: string[];
-  top_k: number;
+  top_k?: number;
   effort: "quick" | "normal" | "thorough";
-  safety_margin_db: number;
+  safety_margin_db?: number;
   seed?: number;
 };
 
@@ -93,18 +90,15 @@ export type FilterResponse = {
   candidates: Candidate[];
 };
 
-// Distinct, vibrant colors for different materials
 export const MATERIAL_COLOR: Record<string, string> = {
-  copper_c11000: "#d97706",   // Amber
-  aluminium_6061_t6: "#64748b", // Slate
-  silver_pure: "#94a3b8",     // Light Slate
-  brass_c26000: "#ca8a04",    // Dark Amber
-  nickel_200: "#475569",      // Dark Slate
-  stainless_steel_304: "#334155", // Steel gray
-  fr4_isola_185hr: "#059669", // Emerald
-  ptfe_virgin: "#10b981",     // Light Emerald
-  
-  // Fallbacks
+  copper_c11000: "#d97706",
+  aluminium_6061_t6: "#64748b",
+  silver_pure: "#94a3b8",
+  brass_c26000: "#ca8a04",
+  nickel_200: "#475569",
+  stainless_steel_304: "#334155",
+  fr4_isola_185hr: "#059669",
+  ptfe_virgin: "#10b981",
   copper: "#d97706",
   aluminium: "#64748b",
   aluminum: "#64748b",
@@ -115,8 +109,6 @@ export const MATERIAL_COLOR: Record<string, string> = {
 export function getMaterialColor(id: string) {
   const key = id.toLowerCase();
   if (MATERIAL_COLOR[key]) return MATERIAL_COLOR[key];
-  
-  // Deterministic hash-based color for unknown materials
   let hash = 0;
   for (let i = 0; i < key.length; i++) hash = key.charCodeAt(i) + ((hash << 5) - hash);
   const c = (hash & 0x00ffffff).toString(16).toUpperCase();

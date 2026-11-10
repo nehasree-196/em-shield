@@ -7,7 +7,7 @@ from pathlib import Path
 from backend.schemas import MaterialCreate
 
 
-DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "materials.json"
+DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "materials_final.json"
 
 
 

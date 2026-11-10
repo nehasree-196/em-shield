@@ -3,11 +3,9 @@ export const API_BASE_URL = "http://localhost:8000";
 
 // Material categories supported by the backend
 export type MaterialCategory =
-  | "conductor"
-  | "insulator"
-  | "semiconductor"
-  | "magnetic"
-  | "other";
+  | "Conductor"
+  | "Insulator"
+  | "Semiconductor"
 
 // Electromagnetic properties of a material
 export interface MaterialProperties {

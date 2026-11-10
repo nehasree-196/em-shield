@@ -1,0 +1,194 @@
+[
+    {
+        "id": "aluminium",
+        "name": "Aluminium",
+        "category": "Conductor",
+        "properties": {
+            "conductivity_s_m": 58000000,
+            "relative_permittivity": 1,
+            "relative_permeability": 1.000021,
+            "dielectric_loss_tangent": 0,
+            "magnetic_loss_tangent": 0
+        }
+    },
+    {
+        "id": "bakelite",
+        "name": "Bakelite",
+        "category": "Insulator",
+        "properties": {
+            "conductivity_s_m": 0.000000001,
+            "relative_permittivity": 4.8,
+            "relative_permeability": 1,
+            "dielectric_loss_tangent": 0.002,
+            "magnetic_loss_tangent": 0
+        }
+    },
+    {
+        "id": "brass",
+        "name": "Brass",
+        "category": "Conductor",
+        "properties": {
+            "conductivity_s_m": 15000000,
+            "relative_permittivity": 1,
+            "relative_permeability": 1,
+            "dielectric_loss_tangent": 0,
+            "magnetic_loss_tangent": 0
+        }
+    },
+    {
+        "id": "bronze",
+        "name": "Bronze",
+        "category": "Conductor",
+        "properties": {
+            "conductivity_s_m": 10000000,
+            "relative_permittivity": 1,
+            "relative_permeability": 1,
+            "dielectric_loss_tangent": 0,
+            "magnetic_loss_tangent": 0
+        }
+    },
+    {
+        "id": "copper",
+        "name": "Copper",
+        "category": "Conductor",
+        "properties": {
+            "conductivity_s_m": 58000000,
+            "relative_permittivity": 1,
+            "relative_permeability": 0.999991,
+            "dielectric_loss_tangent": 0,
+            "magnetic_loss_tangent": 0
+        }
+    },
+    {
+        "id": "ferrite",
+        "name": "Ferrite",
+        "category": "Insulator",
+        "properties": {
+            "conductivity_s_m": 0.01,
+            "relative_permittivity": 12,
+            "relative_permeability": 1000,
+            "dielectric_loss_tangent": 0,
+            "magnetic_loss_tangent": 0
+        }
+    },
+    {
+        "id": "fr4",
+        "name": "FR-4",
+        "category": "Insulator",
+        "properties": {
+            "conductivity_s_m": 0,
+            "relative_permittivity": 4.4,
+            "relative_permeability": 1,
+            "dielectric_loss_tangent": 0.02,
+            "magnetic_loss_tangent": 0
+        }
+    },
+    {
+        "id": "gold",
+        "name": "Gold",
+        "category": "Conductor",
+        "properties": {
+            "conductivity_s_m": 41000000,
+            "relative_permittivity": 1,
+            "relative_permeability": 0.99996,
+            "dielectric_loss_tangent": 0,
+            "magnetic_loss_tangent": 0
+        }
+    },
+    {
+        "id": "graphite",
+        "name": "Graphite",
+        "category": "Conductor",
+        "properties": {
+            "conductivity_s_m": 70000,
+            "relative_permittivity": 1,
+            "relative_permeability": 1,
+            "dielectric_loss_tangent": 0,
+            "magnetic_loss_tangent": 0
+        }
+    },
+    {
+        "id": "nickel",
+        "name": "Nickel",
+        "category": "Conductor",
+        "properties": {
+            "conductivity_s_m": 14500000,
+            "relative_permittivity": 1,
+            "relative_permeability": 600,
+            "dielectric_loss_tangent": 0,
+            "magnetic_loss_tangent": 0
+        }
+    },
+    {
+        "id": "platinum",
+        "name": "Platinum",
+        "category": "Conductor",
+        "properties": {
+            "conductivity_s_m": 9300000,
+            "relative_permittivity": 1,
+            "relative_permeability": 1,
+            "dielectric_loss_tangent": 0,
+            "magnetic_loss_tangent": 0
+        }
+    },
+    {
+        "id": "pvc_plastic",
+        "name": "PVC",
+        "category": "Insulator",
+        "properties": {
+            "conductivity_s_m": 0,
+            "relative_permittivity": 2.7,
+            "relative_permeability": 1,
+            "dielectric_loss_tangent": 0.007,
+            "magnetic_loss_tangent": 0
+        }
+    },
+    {
+        "id": "silicone",
+        "name": "Silicone",
+        "category": "Semiconductor",
+        "properties": {
+            "conductivity_s_m": 0,
+            "relative_permittivity": 11.9,
+            "relative_permeability": 1,
+            "dielectric_loss_tangent": 0,
+            "magnetic_loss_tangent": 0
+        }
+    },
+    {
+        "id": "silver",
+        "name": "Silver",
+        "category": "Conductor",
+        "properties": {
+            "conductivity_s_m": 61000000,
+            "relative_permittivity": 1,
+            "relative_permeability": 0.99998,
+            "dielectric_loss_tangent": 0,
+            "magnetic_loss_tangent": 0
+        }
+    },
+    {
+        "id": "stainless_steel",
+        "name": "Stainless Steel",
+        "category": "Conductor",
+        "properties": {
+            "conductivity_s_m": 1100000,
+            "relative_permittivity": 1,
+            "relative_permeability": 1,
+            "dielectric_loss_tangent": 0,
+            "magnetic_loss_tangent": 0
+        }
+    },
+    {
+        "id": "zinc",
+        "name": "Zinc",
+        "category": "Conductor",
+        "properties": {
+            "conductivity_s_m": 16700000,
+            "relative_permittivity": 1,
+            "relative_permeability": 1,
+            "dielectric_loss_tangent": 0,
+            "magnetic_loss_tangent": 0
+        }
+    }
+]

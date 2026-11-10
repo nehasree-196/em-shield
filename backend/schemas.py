@@ -83,11 +83,9 @@ class MaterialCreate(BaseModel):
     name: str = Field(..., min_length=1)
 
     category: Literal[
-        "conductor",
-        "insulator",
-        "semiconductor",
-        "magnetic",
-        "other",
+        "Conductor",
+        "Insulator",
+        "Semiconductor",
     ]
 
     # Material identification

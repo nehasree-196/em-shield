@@ -1075,3 +1075,18 @@ textarea:focus-visible {
   border-radius: 6px;
 }
 
+.opt-panel > div > .opt-detail {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* Add this if it's not already there */
+.opt-panel .opt-detail {
+  margin: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}

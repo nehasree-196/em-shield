@@ -149,7 +149,6 @@ export default function Optimization() {
         </div>
       </header>
 
-      {/* ERROR BANNER - This will show validation messages prominently */}
       {error && <div className="opt-banner is-error" style={{ fontSize: "14px", fontWeight: 600 }}>{error}</div>}
 
       <div style={{ maxWidth: "1300px", margin: "0 auto", width: "100%" }}>
@@ -207,29 +206,51 @@ export default function Optimization() {
                   {result.validation_grid.angles}
                 </p>
 
-                {selected && <CandidateDetail candidate={selected} target={result.target_se_db} />}
+                {/* STICKY WRAPPER - Flush, no transparent padding */}
+                {selected && (
+                  <div style={{ position: "sticky", top: 0, zIndex: 10 }}>
+                    <div style={{
+                      background: "rgba(237, 240, 255, 0.95)", // Opaque frosted glass
+                      backdropFilter: "blur(12px)",
+                      WebkitBackdropFilter: "blur(12px)",
+                      borderRadius: "14px",
+                      boxShadow: "0 8px 32px rgba(104, 65, 232, 0.15)",
+                      border: "1px solid rgba(192, 202, 255, 0.5)",
+                      overflow: "hidden",
+                      marginBottom: "16px" // Pushes table down cleanly
+                    }}>
+                      <CandidateDetail candidate={selected} target={result.target_se_db} />
+                    </div>
+                  </div>
+                )}
 
-                <div style={{ marginTop: 24 }}>
+                {/* Scrollable Table Area */}
+                <div style={{ 
+                  marginTop: 0, // Reset margin
+                  maxHeight: showAllCandidates ? "calc(100vh - 350px)" : "none", 
+                  overflowY: showAllCandidates ? "auto" : "visible", 
+                  paddingRight: showAllCandidates ? "8px" : "0"
+                }}>
                   <CandidateTable
                     candidates={displayedCandidates}
                     selectedRank={selectedRank}
                     onSelect={setSelectedRank}
                     objective={result.objective}
                   />
-
-                  {result.candidates.length > (req.top_k || 10) && (
-                    <div style={{ textAlign: "center", marginTop: 16 }}>
-                      <button
-                        className="secondary-button"
-                        onClick={() => setShowAllCandidates(!showAllCandidates)}
-                      >
-                        {showAllCandidates 
-                          ? `Show top ${req.top_k || 10} only`
-                          : `View all ${result.candidates.length} candidates`}
-                      </button>
-                    </div>
-                  )}
                 </div>
+
+                {result.candidates.length > (req.top_k || 10) && (
+                  <div style={{ textAlign: "center", marginTop: 16 }}>
+                    <button
+                      className="secondary-button"
+                      onClick={() => setShowAllCandidates(!showAllCandidates)}
+                    >
+                      {showAllCandidates 
+                        ? `Show top ${req.top_k || 10} only`
+                        : `View all ${result.candidates.length} candidates`}
+                    </button>
+                  </div>
+                )}
 
                 <details style={{ marginTop: 24 }}>
                   <summary style={{ cursor: "pointer", color: "var(--muted)", fontSize: 12 }}>

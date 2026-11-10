@@ -60,12 +60,13 @@ export default function Dashboard() {
   const handleSimulationSelection = (mode: string) => {
     setShowPopup(false);
 
-    // Route optimization directly to the Page 6 optimizer
-    if (mode === "optimization") {
+    // Route directly to the specific simulation or optimization page
+    if (mode === "single-layer") {
+      navigate("/single-layer");
+    } else if (mode === "multilayer") {
+      navigate("/multilayer");
+    } else if (mode === "optimization") {
       navigate("/optimization");
-    } else {
-      // For single-layer and multilayer, go to material selection first
-      navigate(`/materials?mode=${mode}`);
     }
   };
 
@@ -197,12 +198,6 @@ export default function Dashboard() {
                   </button>
                 );
               })}
-            </div>
-
-            <div className="simulation-modal-footer">
-              <span>
-                You will select your materials in the next step.
-              </span>
             </div>
           </div>
         </div>

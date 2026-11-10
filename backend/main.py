@@ -1,42 +1,25 @@
-"""FastAPI entry point for EM-Shield; simulation routes for pages 3-5 are registered below."""
+"""FastAPI entry point for EM-Shield: Page 2 materials, pages 3-5 simulation, page 6 optimization."""
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-from routes_simulation import router as simulation_router
-
 from materials import (
-    load_page2_materials,
     get_material,
     search_materials,
     add_material,
 )
-
+from routes_optimization import router as optimization_router
+from routes_simulation import router as simulation_router
 from schemas import MaterialCreate
 
 
 app = FastAPI(
     title="EM-Shield API",
-    description="API for electromagnetic shielding simulations and material management.",
-    version="0.1.0",
+    description="API for electromagnetic shielding simulations, material management and optimization.",
+    version="0.2.0",
 )
 
-# allow the Vite dev server (port 5173) to call this API
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# single-layer, multilayer and sweep endpoints
-app.include_router(simulation_router)
-
-
-# Page 3 simulation routes
-app.include_router(simulation_router)
-
-
+# allow the Vite dev server to call this API (added once)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -48,13 +31,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# pages 3-5: single-layer, multilayer and sweep endpoints (under /api)
+app.include_router(simulation_router)
+
+# page 6: optimization endpoints (under /api/optimization)
+app.include_router(optimization_router)
+
 
 @app.get("/")
 def root():
     return {
         "name": "EM-Shield API",
-        "status": "placeholder",
-        "message": "Simulation endpoints are available under /api.",
+        "status": "ok",
+        "message": "Simulation endpoints are under /api, materials under /materials. Docs at /docs.",
     }
 
 
@@ -67,7 +56,7 @@ def page2_list_materials(
     name: str | None = Query(default=None),
     category: str | None = Query(default=None),
 ):
-    """Return Page 2 materials only."""
+    """Return Page 2 materials (also the source list for the Page 6 optimizer)."""
 
     return search_materials(
         name=name,

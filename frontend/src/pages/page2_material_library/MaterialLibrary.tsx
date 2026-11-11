@@ -1,7 +1,9 @@
 
 import { useEffect, useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getMaterials,
+  createMaterial,
   type Material,
   type MaterialCategory,
 } from "../../services/api";
@@ -12,6 +14,8 @@ function formatProperty(value: number | null | undefined): string {
 
 export default function MaterialLibrary() {
   const mode = new URLSearchParams(window.location.search).get("mode");
+  const navigate = useNavigate();
+  const [showDestinationChoice, setShowDestinationChoice] = useState(false);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [customMaterials, setCustomMaterials] = useState<Material[]>([]);
 
@@ -30,12 +34,16 @@ export default function MaterialLibrary() {
   // Custom material form
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [customName, setCustomName] = useState("");
+  const [customCategory, setCustomCategory] = useState<MaterialCategory>("Conductor");
+  const [saving, setSaving] = useState(false);
   const [conductivity, setConductivity] = useState("");
   const [permittivity, setPermittivity] = useState("");
   const [permeability, setPermeability] = useState("");
   const [dielectricLoss, setDielectricLoss] = useState("");
   const [magneticLoss, setMagneticLoss] = useState("");
+  const [massDensity, setMassDensity] = useState("");
   const [formError, setFormError] = useState("");
+
 
   useEffect(() => {
     let cancelled = false;
@@ -105,108 +113,129 @@ export default function MaterialLibrary() {
     setPermeability("");
     setDielectricLoss("");
     setMagneticLoss("");
+    setMassDensity("");
     setFormError("");
   }
 
-  function addCustomMaterial(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setFormError("");
+  async function addCustomMaterial(event: FormEvent<HTMLFormElement>) {
+  event.preventDefault();
+  setFormError("");
 
-    const name = customName.trim();
+  const name = customName.trim();
 
-    const values = [
-      conductivity,
-      permittivity,
-      permeability,
-      dielectricLoss,
-      magneticLoss,
-    ].map(Number);
+  const values = [
+    conductivity,
+    permittivity,
+    permeability,
+    dielectricLoss,
+    magneticLoss,
+    massDensity,
+  ].map(Number);
 
-    const [
-      conductivityValue,
-      permittivityValue,
-      permeabilityValue,
-      dielectricLossValue,
-      magneticLossValue,
-    ] = values;
+  const [
+    conductivityValue,
+    permittivityValue,
+    permeabilityValue,
+    dielectricLossValue,
+    magneticLossValue,
+    massDensityValue,
+  ] = values;
 
-    if (!name) {
-      setFormError("Please enter a material name.");
-      return;
-    }
+  if (!name) {
+    setFormError("Please enter a material name.");
+    return;
+  }
 
-    if (values.some((value) => !Number.isFinite(value))) {
-      setFormError("Please enter valid numerical values for all properties.");
-      return;
-    }
+  if (values.some((value) => !Number.isFinite(value))) {
+    setFormError("Please enter valid numerical values for all properties.");
+    return;
+  }
 
-    if (
-      conductivityValue < 0 ||
-      dielectricLossValue < 0 ||
-      magneticLossValue < 0
-    ) {
-      setFormError("Conductivity and loss tangents cannot be negative.");
-      return;
-    }
+  if (
+    conductivityValue < 0 ||
+    dielectricLossValue < 0 ||
+    magneticLossValue < 0 ||
+    massDensityValue < 0
+  ) {
+    setFormError("Conductivity, loss tangents, and mass density cannot be negative.");
+    return;
+  }
 
-    if (permittivityValue <= 0 || permeabilityValue <= 0) {
-      setFormError(
-        "Relative permittivity and permeability must be greater than zero."
-      );
-      return;
-    }
-
-    const duplicateName = [...materials, ...customMaterials].some(
-      (material) => material.name.toLowerCase() === name.toLowerCase()
+  if (permittivityValue <= 0 || permeabilityValue <= 0) {
+    setFormError(
+      "Relative permittivity and permeability must be greater than zero."
     );
+    return;
+  }
 
-    if (duplicateName) {
-      setFormError("A material with this name already exists.");
-      return;
-    }
+  const duplicateName = [...materials, ...customMaterials].some(
+    (material) => material.name.toLowerCase() === name.toLowerCase()
+  );
 
-    const slug = name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
+  if (duplicateName) {
+    setFormError("A material with this name already exists.");
+    return;
+  }
 
-    const newMaterial: Material = {
-      id: `custom-${slug}-${Date.now()}`,
-      name,
-      category: "Custom",
-      properties: {
-        conductivity_s_m: conductivityValue,
-        relative_permittivity: permittivityValue,
-        relative_permeability: permeabilityValue,
-        dielectric_loss_tangent: dielectricLossValue,
-        magnetic_loss_tangent: magneticLossValue,
-      },
-      sources: [],
-      frequency_dependent_properties: [],
-    };
+  const slug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 
-    // Keep the custom material in temporary React state.
-    setCustomMaterials((previous) => [...previous, newMaterial]);
+  const newMaterial: Material = {
+    id: `custom-${slug}-${Date.now()}`,
+    name,
+    category: customCategory,
+    properties: {
+      conductivity_s_m: conductivityValue,
+      relative_permittivity: permittivityValue,
+      relative_permeability: permeabilityValue,
+      dielectric_loss_tangent: dielectricLossValue,
+      magnetic_loss_tangent: magneticLossValue,
+      mass_density: massDensityValue,
+    },
+    sources: [],
+    frequency_dependent_properties: [],
+  };
+
+  try {
+    setSaving(true);
+
+    // Save the material permanently through the backend.
+    const savedMaterial = await createMaterial(newMaterial);
+
+    // Add the saved material to the page.
+    setCustomMaterials((previous) => [...previous, savedMaterial]);
 
     // Automatically select the newly added material.
     setSelectedMaterials((previous) => {
       const updated = new Set(previous);
-      updated.add(newMaterial.id);
+      updated.add(savedMaterial.id);
       return updated;
     });
 
     // Automatically expand its properties.
     setExpandedMaterials((previous) => {
       const updated = new Set(previous);
-      updated.add(newMaterial.id);
+      updated.add(savedMaterial.id);
       return updated;
     });
 
     resetCustomForm();
+    setCustomCategory("Conductor");
     setShowCustomForm(false);
     setSearch("");
     setCategory("");
+  } catch (err) {
+    setFormError(
+      err instanceof Error
+        ? err.message
+        : "Failed to save the custom material."
+    );
+  } finally {
+    setSaving(false);
   }
+}
 
   // Filter predefined materials locally.
 const filteredPredefinedMaterials = materials.filter((material) => {
@@ -221,18 +250,19 @@ const filteredPredefinedMaterials = materials.filter((material) => {
 });
 
 // Filter custom materials.
+// Filter custom materials using their selected scientific category.
 const filteredCustomMaterials = customMaterials.filter((material) => {
   const matchesSearch = material.name
     .toLowerCase()
     .includes(search.trim().toLowerCase());
 
-  const matchesCategory = !category || category === "Custom";
+  const matchesCategory = !category || material.category === category;
 
   return matchesSearch && matchesCategory;
 });
 
 const displayedMaterials = [
-  ...(category === "Custom" ? [] : filteredPredefinedMaterials),
+  ...filteredPredefinedMaterials,
   ...filteredCustomMaterials,
 ];
 
@@ -245,15 +275,7 @@ const selectedMaterialDetails = allMaterials.filter((material) =>
 );
 
 // Validate the selection according to the entry mode.
-const canContinue =
-  selectedMaterials.size > 0 &&
-  (
-    mode === "single-layer"
-      ? selectedMaterials.size === 1
-      : mode === "multilayer"
-        ? selectedMaterials.size >= 2
-        : true
-  );
+const canContinue = selectedMaterials.size > 0;
 
 // Navigate to the correct page.
 function handleNext() {
@@ -261,10 +283,7 @@ function handleNext() {
 
   if (selected.length === 0) return;
 
-  if (mode === "single-layer" && selected.length !== 1) return;
-  if (mode === "multilayer" && selected.length < 2) return;
-
-  // Temporarily store selected material details for the next page.
+  // Save selected material details for the destination page.
   sessionStorage.setItem(
     "emShield.selectedMaterials",
     JSON.stringify(selected)
@@ -275,11 +294,17 @@ function handleNext() {
     JSON.stringify(selected.map((material) => material.id))
   );
 
-  // Choose the destination automatically.
-  const destination =
-    selected.length === 1 ? "/single-layer" : "/multilayer";
-
-  window.location.assign(destination);
+  // Flow 1: Dashboard-selected mode.
+  if (mode === "single-layer") {
+    navigate("/single-layer");
+  } else if (mode === "multilayer") {
+    navigate("/multilayer");
+  } else if (mode === "optimization") {
+    navigate("/optimization");
+  } else {
+    // Flow 2: Directly opened Material Library.
+    setShowDestinationChoice(true);
+  }
 }
   return (
     <div style={{ padding: "24px" }}>
@@ -313,7 +338,6 @@ function handleNext() {
           <option value="Conductor">Conductor</option>
           <option value="Insulator">Insulator</option>
           <option value="Semiconductor">Semiconductor</option>
-          <option value="Custom">Custom</option>
         </select>
 
         <button
@@ -361,7 +385,21 @@ function handleNext() {
                 style={{ display: "block", width: "100%", padding: "10px" }}
               />
             </label>
-
+            <label>
+               Material Category *
+              <select
+               value={customCategory}
+              onChange={(event) =>
+              setCustomCategory(event.target.value as MaterialCategory)
+              }
+              required
+              style={{ display: "block", width: "100%", padding: "10px" }}
+              >
+              <option value="Conductor">Conductor</option>
+              <option value="Insulator">Insulator</option>
+              <option value="Semiconductor">Semiconductor</option>
+              </select>
+            </label>
             <label>
               Conductivity (S/m) *
               <input
@@ -426,14 +464,30 @@ function handleNext() {
                 style={{ display: "block", width: "100%", padding: "10px" }}
               />
             </label>
+            <label>
+              Mass Density *
+              <input
+                type="number"
+                min="0"
+                step="any"
+                value={massDensity}
+                onChange={(event) => setMassDensity(event.target.value)}
+                required
+                style={{ display: "block", width: "100%", padding: "10px" }}
+              />
+            </label>
           </div>
 
           {formError && (
             <p style={{ color: "red" }}>{formError}</p>
           )}
 
-          <button type="submit" style={{ padding: "10px 16px", marginTop: "16px" }}>
-            Add Material
+          <button
+            type="submit"
+            disabled={saving}
+            style={{ padding: "10px 16px", marginTop: "16px" }}
+          >
+            {saving ? "Saving..." : "Add Material"}
           </button>
 
           <button
@@ -555,6 +609,10 @@ function handleNext() {
                     Magnetic Loss Tangent:{" "}
                     {formatProperty(material.properties.magnetic_loss_tangent)}
                   </p>
+                  <p>
+                    Mass Density:{" "}
+                    {formatProperty(material.properties.mass_density)}
+                  </p>
                 </div>
               )}
             </div>
@@ -562,18 +620,6 @@ function handleNext() {
         })}
       </div>
       <div style={{ marginTop: "28px", textAlign: "right" }}>
-  {mode === "single-layer" && selectedMaterials.size > 1 && (
-    <p style={{ color: "red" }}>
-      Single-layer simulation requires exactly one material.
-    </p>
-  )}
-
-  {mode === "multilayer" && selectedMaterials.size === 1 && (
-    <p style={{ color: "red" }}>
-      Multilayer simulation requires at least two materials.
-    </p>
-  )}
-
   {selectedMaterials.size === 0 && (
     <p>Please select at least one material to continue.</p>
   )}
@@ -592,6 +638,56 @@ function handleNext() {
     Next →
   </button>
 </div>
+
+{/* Flow 2: Choose a destination when Material Library is opened directly */}
+{showDestinationChoice && (
+  <div
+    style={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0, 0, 0, 0.5)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1000,
+    }}
+  >
+    <div
+      role="dialog"
+      aria-modal="true"
+      style={{
+        background: "white",
+        padding: "28px",
+        borderRadius: "12px",
+        width: "min(90%, 420px)",
+      }}
+    >
+      <h2>Choose Simulation Type</h2>
+      <p>Where would you like to use your selected materials?</p>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        <button type="button" onClick={() => navigate("/single-layer")}>
+          Single-Layer Simulation
+        </button>
+
+        <button type="button" onClick={() => navigate("/multilayer")}>
+          Multilayer Simulation
+        </button>
+
+        <button type="button" onClick={() => navigate("/optimization")}>
+          Material Optimization
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setShowDestinationChoice(false)}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

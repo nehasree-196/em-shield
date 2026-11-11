@@ -48,6 +48,11 @@ class MaterialProperties(BaseModel):
         ge=0,
         description="Magnetic loss tangent",
     )
+    mass_density: float | None = Field(
+        default=None,
+        ge=0,
+        despcription="Mass Density",
+    )
 
 
 

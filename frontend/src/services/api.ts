@@ -14,6 +14,7 @@ export interface MaterialProperties {
   relative_permeability: number | null;
   dielectric_loss_tangent: number | null;
   magnetic_loss_tangent: number | null;
+  mass_density: number | null;
 }
 
 // Source or reference for material data

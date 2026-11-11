@@ -8,7 +8,8 @@
             "relative_permittivity": 1,
             "relative_permeability": 1.000021,
             "dielectric_loss_tangent": 0,
-            "magnetic_loss_tangent": 0
+            "magnetic_loss_tangent": 0,
+            "mass_density": 2689
         }
     },
     {
@@ -16,11 +17,12 @@
         "name": "Bakelite",
         "category": "Insulator",
         "properties": {
-            "conductivity_s_m": 0.000000001,
+            "conductivity_s_m": 1e-09,
             "relative_permittivity": 4.8,
             "relative_permeability": 1,
             "dielectric_loss_tangent": 0.002,
-            "magnetic_loss_tangent": 0
+            "magnetic_loss_tangent": 0,
+            "mass_density": 1300
         }
     },
     {
@@ -32,7 +34,8 @@
             "relative_permittivity": 1,
             "relative_permeability": 1,
             "dielectric_loss_tangent": 0,
-            "magnetic_loss_tangent": 0
+            "magnetic_loss_tangent": 0,
+            "mass_density": 8600
         }
     },
     {
@@ -44,7 +47,8 @@
             "relative_permittivity": 1,
             "relative_permeability": 1,
             "dielectric_loss_tangent": 0,
-            "magnetic_loss_tangent": 0
+            "magnetic_loss_tangent": 0,
+            "mass_density": 8890
         }
     },
     {
@@ -56,7 +60,8 @@
             "relative_permittivity": 1,
             "relative_permeability": 0.999991,
             "dielectric_loss_tangent": 0,
-            "magnetic_loss_tangent": 0
+            "magnetic_loss_tangent": 0,
+            "mass_density": 8933
         }
     },
     {
@@ -68,7 +73,8 @@
             "relative_permittivity": 12,
             "relative_permeability": 1000,
             "dielectric_loss_tangent": 0,
-            "magnetic_loss_tangent": 0
+            "magnetic_loss_tangent": 0,
+            "mass_density": 4600
         }
     },
     {
@@ -80,7 +86,8 @@
             "relative_permittivity": 4.4,
             "relative_permeability": 1,
             "dielectric_loss_tangent": 0.02,
-            "magnetic_loss_tangent": 0
+            "magnetic_loss_tangent": 0,
+            "mass_density": 1900
         }
     },
     {
@@ -92,7 +99,8 @@
             "relative_permittivity": 1,
             "relative_permeability": 0.99996,
             "dielectric_loss_tangent": 0,
-            "magnetic_loss_tangent": 0
+            "magnetic_loss_tangent": 0,
+            "mass_density": 19300
         }
     },
     {
@@ -104,7 +112,8 @@
             "relative_permittivity": 1,
             "relative_permeability": 1,
             "dielectric_loss_tangent": 0,
-            "magnetic_loss_tangent": 0
+            "magnetic_loss_tangent": 0,
+            "mass_density": 2250
         }
     },
     {
@@ -116,7 +125,8 @@
             "relative_permittivity": 1,
             "relative_permeability": 600,
             "dielectric_loss_tangent": 0,
-            "magnetic_loss_tangent": 0
+            "magnetic_loss_tangent": 0,
+            "mass_density": 8900
         }
     },
     {
@@ -128,7 +138,8 @@
             "relative_permittivity": 1,
             "relative_permeability": 1,
             "dielectric_loss_tangent": 0,
-            "magnetic_loss_tangent": 0
+            "magnetic_loss_tangent": 0,
+            "mass_density": 21450
         }
     },
     {
@@ -140,7 +151,8 @@
             "relative_permittivity": 2.7,
             "relative_permeability": 1,
             "dielectric_loss_tangent": 0.007,
-            "magnetic_loss_tangent": 0
+            "magnetic_loss_tangent": 0,
+            "mass_density": 1388
         }
     },
     {
@@ -152,7 +164,8 @@
             "relative_permittivity": 11.9,
             "relative_permeability": 1,
             "dielectric_loss_tangent": 0,
-            "magnetic_loss_tangent": 0
+            "magnetic_loss_tangent": 0,
+            "mass_density": 2330
         }
     },
     {
@@ -164,7 +177,8 @@
             "relative_permittivity": 1,
             "relative_permeability": 0.99998,
             "dielectric_loss_tangent": 0,
-            "magnetic_loss_tangent": 0
+            "magnetic_loss_tangent": 0,
+            "mass_density": 10500
         }
     },
     {
@@ -176,7 +190,8 @@
             "relative_permittivity": 1,
             "relative_permeability": 1,
             "dielectric_loss_tangent": 0,
-            "magnetic_loss_tangent": 0
+            "magnetic_loss_tangent": 0,
+            "mass_density": 8055
         }
     },
     {
@@ -188,7 +203,29 @@
             "relative_permittivity": 1,
             "relative_permeability": 1,
             "dielectric_loss_tangent": 0,
-            "magnetic_loss_tangent": 0
+            "magnetic_loss_tangent": 0,
+            "mass_density": 7140
         }
+    },
+    {
+        "id": "custom-test-1794411044126",
+        "name": "Test",
+        "category": "Conductor",
+        "grade": null,
+        "composition": null,
+        "properties": {
+            "conductivity_s_m": 12.0,
+            "relative_permittivity": 123.0,
+            "relative_permeability": 1234.0,
+            "dielectric_loss_tangent": 12345.0,
+            "magnetic_loss_tangent": 123456.0,
+            "mass_density": 1234567.0
+        },
+        "reference_frequency_hz": null,
+        "temperature_c": null,
+        "valid_frequency_min_hz": null,
+        "valid_frequency_max_hz": null,
+        "sources": [],
+        "frequency_dependent_properties": []
     }
 ]

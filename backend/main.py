@@ -2,6 +2,8 @@
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from materials import (
+    load_materials,
 
 from materials import (
     get_material,

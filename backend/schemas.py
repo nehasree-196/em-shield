@@ -12,11 +12,37 @@ from pydantic import BaseModel, Field, ConfigDict, model_validator
 class MaterialProperties(BaseModel):
     """Electromagnetic properties of a material."""
 
-    conductivity_s_m: float | None = Field(default=None, ge=0)
-    relative_permittivity: float | None = Field(default=None, gt=0)
-    relative_permeability: float | None = Field(default=None, gt=0)
-    dielectric_loss_tangent: float | None = Field(default=None, ge=0)
-    magnetic_loss_tangent: float | None = Field(default=None, ge=0)
+    conductivity_s_m: float | None = Field(
+        default=None,
+        ge=0,
+        description="Electrical conductivity in S/m",
+    )
+    relative_permittivity: float | None = Field(
+        default=None,
+        gt=0,
+        description="Relative permittivity",
+    )
+    relative_permeability: float | None = Field(
+        default=None,
+        gt=0,
+        description="Relative permeability",
+    )
+    dielectric_loss_tangent: float | None = Field(
+        default=None,
+        ge=0,
+        description="Dielectric loss tangent",
+    )
+    magnetic_loss_tangent: float | None = Field(
+        default=None,
+        ge=0,
+        description="Magnetic loss tangent",
+    )
+    mass_density: float | None = Field(
+        default=None,
+        ge=0,
+        despcription="Mass Density",
+    )
+
 
 
 class MaterialSource(BaseModel):
@@ -37,7 +63,14 @@ class MaterialCreate(BaseModel):
 
     id: str = Field(..., min_length=1)
     name: str = Field(..., min_length=1)
-    category: Literal["conductor", "insulator", "semiconductor", "magnetic", "other"]
+
+    category: Literal[
+        "Conductor",
+        "Insulator",
+        "Semiconductor",
+    ]
+
+    # Material identification
     grade: str | None = None
     composition: str | None = None
 

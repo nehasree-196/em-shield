@@ -3,11 +3,9 @@ export const API_BASE_URL = "http://localhost:8000";
 
 // Material categories supported by the backend
 export type MaterialCategory =
-  | "conductor"
-  | "insulator"
-  | "semiconductor"
-  | "magnetic"
-  | "other";
+  | "Conductor"
+  | "Insulator"
+  | "Semiconductor"
 
 // Electromagnetic properties of a material
 export interface MaterialProperties {
@@ -16,6 +14,7 @@ export interface MaterialProperties {
   relative_permeability: number | null;
   dielectric_loss_tangent: number | null;
   magnetic_loss_tangent: number | null;
+  mass_density: number | null;
 }
 
 // Source or reference for material data

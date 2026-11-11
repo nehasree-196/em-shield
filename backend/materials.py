@@ -7,8 +7,7 @@ from pathlib import Path
 from schemas import MaterialCreate
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "data"
+DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "materials_final.json"
 
 # Separate databases
 PAGE2_DATA_FILE = DATA_DIR / "materials_page2.json"

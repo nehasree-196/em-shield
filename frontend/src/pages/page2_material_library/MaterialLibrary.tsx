@@ -56,12 +56,14 @@ export default function MaterialLibrary() {
         const data = await getMaterials();
 
         if (!cancelled) {
-          setMaterials(data);
+          setMaterials(Array.isArray(data) ? data : []);
         }
       } catch (err) {
         if (!cancelled) {
           setError(
-            err instanceof Error ? err.message : "Failed to load materials."
+            err instanceof Error
+              ? err.message
+              : "Failed to load materials."
           );
         }
       } finally {

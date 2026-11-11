@@ -1,5 +1,5 @@
 
-"""Material data access and management for EM-Shield."""
+"""Material-data access helpers: load the JSON library and resolve a material reference."""
 
 import json
 from pathlib import Path
@@ -9,47 +9,51 @@ from schemas import MaterialCreate
 
 DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "materials_final.json"
 
+# Separate databases
+PAGE2_DATA_FILE = DATA_DIR / "materials_page2.json"
+PAGE3_DATA_FILE = DATA_DIR / "materials.json"
 
 
-def load_materials():
-    """Load and validate all materials from the JSON database."""
+# =========================================================
+# PAGE 2 — MATERIAL LIBRARY
+# =========================================================
 
-    if not DATA_FILE.exists():
+def load_page2_materials():
+    """Load and validate Page 2 materials."""
+
+    if not PAGE2_DATA_FILE.exists():
         return []
 
-    with DATA_FILE.open("r", encoding="utf-8") as file:
+    with PAGE2_DATA_FILE.open("r", encoding="utf-8") as file:
         materials = json.load(file)
 
     if not isinstance(materials, list):
-        raise ValueError("Material database must contain a JSON list.")
+        raise ValueError("Page 2 material database must be a JSON list.")
 
     for index, material in enumerate(materials):
         try:
             MaterialCreate.model_validate(material)
         except Exception as exc:
             raise ValueError(
-                f"Invalid material record at index {index}: {exc}"
+                f"Invalid Page 2 material at index {index}: {exc}"
             ) from exc
 
     return materials
 
 
+def save_page2_materials(materials):
+    """Save Page 2 materials."""
 
-def save_materials(materials):
-    """Save the complete material list to the JSON database."""
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-    DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
-
-    with DATA_FILE.open("w", encoding="utf-8") as file:
+    with PAGE2_DATA_FILE.open("w", encoding="utf-8") as file:
         json.dump(materials, file, indent=4)
 
 
 def get_material(material_id):
-    """Find a material using its unique ID."""
+    """Get a Page 2 material by ID."""
 
-    materials = load_materials()
-
-    for material in materials:
+    for material in load_page2_materials():
         if material["id"].lower() == material_id.lower():
             return material
 
@@ -57,41 +61,135 @@ def get_material(material_id):
 
 
 def search_materials(name=None, category=None):
-    """Search materials by name and/or category."""
+    """Search Page 2 materials."""
 
-    materials = load_materials()
+    materials = load_page2_materials()
 
     if name:
         materials = [
-            material for material in materials
-            if name.lower() in material["name"].lower()
+            m for m in materials
+            if name.lower() in m["name"].lower()
         ]
 
     if category:
         materials = [
-            material for material in materials
-            if material["category"].lower() == category.lower()
+            m for m in materials
+            if m["category"].lower() == category.lower()
         ]
 
     return materials
 
 
 def add_material(material_data):
-    """Validate and add a new custom material."""
+    """Add a material to Page 2 only."""
 
     material = MaterialCreate.model_validate(material_data)
 
-    materials = load_materials()
+    materials = load_page2_materials()
 
     if any(
         existing["id"].lower() == material.id.lower()
         for existing in materials
     ):
-        raise ValueError(f"Material ID '{material.id}' already exists.")
+        raise ValueError(
+            f"Material ID '{material.id}' already exists."
+        )
 
     new_material = material.model_dump()
 
     materials.append(new_material)
-    save_materials(materials)
+
+    save_page2_materials(materials)
 
     return new_material
+
+
+# =========================================================
+# PAGE 3 — SIMULATION MATERIAL LIBRARY
+# =========================================================
+
+def load_materials():
+    """Load Page 3 flat-format materials."""
+
+    if not PAGE3_DATA_FILE.exists():
+        return []
+
+    with PAGE3_DATA_FILE.open("r", encoding="utf-8") as file:
+        materials = json.load(file)
+
+    if not isinstance(materials, list):
+        raise ValueError(
+            "Page 3 material database must be a JSON list."
+        )
+
+    required_fields = {
+        "id",
+        "name",
+        "sigma_s_per_m",
+        "epsilon_r",
+        "mu_r",
+    }
+
+    for index, material in enumerate(materials):
+
+        if not isinstance(material, dict):
+            raise ValueError(
+                f"Invalid Page 3 material at index {index}."
+            )
+
+        missing = required_fields - material.keys()
+
+        if missing:
+            raise ValueError(
+                f"Page 3 material {index} missing fields: {missing}"
+            )
+
+    return materials
+
+
+def list_materials():
+    """List Page 3 simulation materials."""
+
+    return load_materials()
+
+
+def resolve_material(spec):
+    """
+    Resolve a Page 3 MaterialSpec.
+
+    Returns:
+        (sigma, epsilon_r, mu_r, label)
+    """
+
+    if spec.material_id:
+
+        for material in load_materials():
+
+            if material["id"].lower() == spec.material_id.lower():
+
+                return (
+                    material["sigma_s_per_m"],
+                    material["epsilon_r"],
+                    material["mu_r"],
+                    material["name"],
+                )
+
+        raise KeyError(
+            f"Unknown material_id '{spec.material_id}'"
+        )
+
+    return (
+        spec.sigma_s_per_m,
+        spec.epsilon_r,
+        spec.mu_r,
+        "Custom material",
+    )
+
+
+def save_materials(materials):
+    """Save Page 3 simulation materials."""
+
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+    with PAGE3_DATA_FILE.open("w", encoding="utf-8") as file:
+        json.dump(materials, file, indent=4)

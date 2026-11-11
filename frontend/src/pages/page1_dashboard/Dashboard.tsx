@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -60,7 +59,7 @@ export default function Dashboard() {
 
   const handleSimulationSelection = (mode: string) => {
     setShowPopup(false);
-
+    // Send all modes to the materials page first
     navigate(`/materials?mode=${mode}`);
   };
 
@@ -192,12 +191,6 @@ export default function Dashboard() {
                   </button>
                 );
               })}
-            </div>
-
-            <div className="simulation-modal-footer">
-              <span>
-                You will select your materials in the next step.
-              </span>
             </div>
           </div>
         </div>

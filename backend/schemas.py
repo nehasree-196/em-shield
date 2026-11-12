@@ -2,7 +2,7 @@
 
 from typing import Literal, Optional
 
-from pydantic import BaseModel, Field, ConfigDict, model_validator
+from pydantic import BaseModel, Field, ConfigDict, model_validator, AliasChoices
 
 
 # =========================================================
@@ -40,9 +40,8 @@ class MaterialProperties(BaseModel):
     mass_density: float | None = Field(
         default=None,
         ge=0,
-        despcription="Mass Density",
+        description="Mass density in kg/m³",
     )
-
 
 
 class MaterialSource(BaseModel):
@@ -156,7 +155,7 @@ class OptMaterialProperties(BaseModel):
     relative_permeability: Optional[float] = Field(default=None, gt=0)
     dielectric_loss_tangent: Optional[float] = Field(default=None, ge=0)
     magnetic_loss_tangent: Optional[float] = Field(default=None, ge=0)
-    mass_density_kg_m3: Optional[float] = Field(default=None, gt=0)
+    mass_density_kg_m3: Optional[float] = Field(default=None, gt=0, validation_alias=AliasChoices("mass_density_kg_m3", "mass_density"),)    
     magnetic_saturation_a_m: Optional[float] = Field(default=None, ge=0)
     lande_g_factor: Optional[float] = Field(default=None, gt=0)
     delta_h_a_m: Optional[float] = Field(default=None, ge=0)

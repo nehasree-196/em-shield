@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import MaterialSelect, {
   defaultMaterial,
   materialLabel,
-  toMaterialSpec,
+  toResolvableMaterialSpec,
 } from '../../components/MaterialSelect';
 import ResultCards from '../../components/ResultCards';
 import ResultsChart from '../../components/ResultsChart';
@@ -24,6 +24,9 @@ export default function SingleLayer() {
   const materials = Array.isArray(workspace?.materials)
     ? workspace.materials
     : [];
+  const sessionMaterials = Array.isArray(workspace?.sessionMaterials)
+    ? workspace.sessionMaterials
+    : [];
   const setActiveSingle =
     typeof workspace?.setActiveSingle === 'function'
       ? workspace.setActiveSingle
@@ -31,8 +34,6 @@ export default function SingleLayer() {
 
   const navigate = useNavigate();
 
-  // Default to the first library material (or Copper if the list is empty yet —
-  // MaterialSelect will re-render once the list arrives).
   const [material, setMaterial] = useState(() =>
     materialToSelectValue(materials[0])
   );
@@ -48,8 +49,9 @@ export default function SingleLayer() {
     setError('');
     setLoading(true);
     try {
+      const materialSpec = toResolvableMaterialSpec(material, sessionMaterials);
       const body = {
-        material: toMaterialSpec(material),
+        material: materialSpec,
         thickness_m: toSI(thickness, thicknessUnit, THICKNESS_UNITS),
         frequency_hz: toSI(freq, freqUnit, FREQ_UNITS),
       };
@@ -58,7 +60,7 @@ export default function SingleLayer() {
       setActiveSingle({
         label: `${materialLabel(material, materials)}, ${thickness} ${thicknessUnit}`,
         frequency_hz: body.frequency_hz,
-        layers: [{ material: body.material, thickness_m: body.thickness_m }],
+        layers: [{ material: materialSpec, thickness_m: body.thickness_m }],
       });
     } catch (e) {
       setError(e.message);

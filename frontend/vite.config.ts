@@ -1,5 +1,3 @@
-//this sets up vite to run the development server on the 5173 port, so it just tells vite how to run the application during the development phase
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
@@ -12,7 +10,7 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
-        rewrite: (p) => p.replace(/^\/api/, ''),
+        // NO rewrite — /api/* must reach FastAPI unchanged.
       },
     },
   },

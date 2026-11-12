@@ -1,6 +1,6 @@
 """FastAPI entry point for EM-Shield: Page 2 materials, pages 3-5 simulation, page 6 optimization."""
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import APIRouter, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from materials import (
     load_materials,
@@ -19,7 +19,6 @@ app = FastAPI(
     version="0.2.0",
 )
 
-# allow the Vite dev server to call this API (added once)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -31,11 +30,54 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# pages 3-5: single-layer, multilayer and sweep endpoints (under /api)
+
+# =========================================================
+# MOUNT ROUTERS
+# =========================================================
+# routes_simulation.py declares its own prefix (APIRouter(prefix="/api")),
+# so we must NOT add another prefix here or we get /api/api/... .
 app.include_router(simulation_router)
 
-# page 6: optimization endpoints (under /api/optimization)
+# routes_optimization.py declares APIRouter(prefix="/api/optimization"),
+# so again: no extra prefix.
 app.include_router(optimization_router)
+
+
+# =========================================================
+# PAGE 2 — MATERIAL LIBRARY API (mounted under /api)
+# =========================================================
+
+materials_router = APIRouter()
+
+
+@materials_router.get("/materials")
+def page2_list_materials(
+    name: str | None = Query(default=None),
+    category: str | None = Query(default=None),
+):
+    """Return Page 2 materials (also the source list for the Page 6 optimizer)."""
+    return search_materials(name=name, category=category)
+
+
+@materials_router.get("/materials/{material_id}")
+def page2_material_details(material_id: str):
+    """Get a Page 2 material."""
+    material = get_material(material_id)
+    if material is None:
+        raise HTTPException(status_code=404, detail="Material not found.")
+    return material
+
+
+@materials_router.post("/materials", status_code=201)
+def page2_create_material(material_data: MaterialCreate):
+    """Create a Page 2 material."""
+    try:
+        return add_material(material_data.model_dump())
+    except ValueError as error:
+        raise HTTPException(status_code=409, detail=str(error))
+
+
+app.include_router(materials_router, prefix="/api")
 
 
 @app.get("/")
@@ -43,51 +85,9 @@ def root():
     return {
         "name": "EM-Shield API",
         "status": "ok",
-        "message": "Simulation endpoints are under /api, materials under /materials. Docs at /docs.",
+        "message": (
+            "All frontend endpoints are under /api "
+            "(/api/materials, /api/single-layer, /api/multilayer, /api/sweep, "
+            "/api/optimization/*). Docs at /docs."
+        ),
     }
-
-
-# =========================================================
-# PAGE 2 — MATERIAL LIBRARY API
-# =========================================================
-
-@app.get("/materials")
-def page2_list_materials(
-    name: str | None = Query(default=None),
-    category: str | None = Query(default=None),
-):
-    """Return Page 2 materials (also the source list for the Page 6 optimizer)."""
-
-    return search_materials(
-        name=name,
-        category=category,
-    )
-
-
-@app.get("/materials/{material_id}")
-def page2_material_details(material_id: str):
-    """Get a Page 2 material."""
-
-    material = get_material(material_id)
-
-    if material is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Material not found.",
-        )
-
-    return material
-
-
-@app.post("/materials", status_code=201)
-def page2_create_material(material_data: MaterialCreate):
-    """Create a Page 2 material."""
-
-    try:
-        return add_material(material_data.model_dump())
-
-    except ValueError as error:
-        raise HTTPException(
-            status_code=409,
-            detail=str(error),
-        )

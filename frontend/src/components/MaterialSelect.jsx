@@ -1,4 +1,4 @@
-// MaterialSelect.jsx — pick a library material; exports a helper for the API payload.
+// MaterialSelect.jsx — pick a library material; exports helpers for the API payload.
 // Custom σ / εᵣ / μᵣ entry has been removed: only library + session materials are selectable.
 import { useWorkspace } from '../context/WorkspaceContext';
 
@@ -11,21 +11,39 @@ export const defaultMaterial = () => ({
 });
 
 // Convert the UI state into the MaterialSpec the backend expects.
-// Every reachable selection is a library pick now, so this always returns a
-// material_id. The custom branch is kept for backward compatibility but is
-// unreachable from this UI.
+// Always returns a material_id (the custom-option branch is unreachable now).
 export function toMaterialSpec(m) {
-  return m.mode === 'library'
+  return m?.mode === 'library'
     ? { material_id: m.id }
     : {
-        sigma_s_per_m: Number(m.sigma),
-        epsilon_r: Number(m.epsR),
-        mu_r: Number(m.muR),
+        sigma_s_per_m: Number(m?.sigma),
+        epsilon_r: Number(m?.epsR),
+        mu_r: Number(m?.muR),
       };
 }
 
+// Like toMaterialSpec, but resolves session-only customs into a full
+// { sigma_s_per_m, epsilon_r, mu_r } spec, because the backend only knows
+// IDs that live in materials_final.json.
+export function toResolvableMaterialSpec(selected, sessionMaterials) {
+  if (!selected || selected.mode !== 'library') {
+    return { material_id: selected?.id };
+  }
+  const list = Array.isArray(sessionMaterials) ? sessionMaterials : [];
+  const session = list.find((m) => m.id === selected.id);
+  if (session) {
+    const p = session.properties || {};
+    return {
+      sigma_s_per_m: p.conductivity_s_m ?? 0,
+      epsilon_r: p.relative_permittivity ?? 1,
+      mu_r: p.relative_permeability ?? 1,
+    };
+  }
+  return { material_id: selected.id };
+}
+
 export const materialLabel = (m, materials) =>
-  m.mode === 'library'
+  m?.mode === 'library'
     ? materials.find((x) => x.id === m.id)?.name ?? m.id
     : 'Custom material';
 
@@ -36,9 +54,8 @@ export default function MaterialSelect({ value, onChange }) {
     : [];
   const materialsError = workspace?.materialsError || '';
 
-  // Defensive: if the current `value.id` is no longer in the list (e.g. a
-  // session custom was removed while selected), fall back to the first
-  // available material so the <select> doesn't show a phantom option.
+  // If the current `value.id` is no longer in the list (e.g. a session custom
+  // was removed while selected), fall back to the first available material.
   const currentId =
     value?.mode === 'library' && materials.some((m) => m.id === value.id)
       ? value.id

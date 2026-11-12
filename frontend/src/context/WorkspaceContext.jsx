@@ -1,23 +1,100 @@
-// WorkspaceContext.jsx — shared state: material list, active single-layer design, active stack, latest sweep.
 import { createContext, useContext, useEffect, useState } from 'react';
 import { getMaterials } from '../services/api';
 
 const WorkspaceContext = createContext(null);
+const SESSION_MATERIALS_KEY = 'emShield.sessionMaterials';
 
-export function WorkspaceProvider({ children }) {
-  const [materials, setMaterials] = useState([]);
-  const [materialsError, setMaterialsError] = useState('');
-  const [activeSingle, setActiveSingle] = useState(null); // {layers:[{material,thickness_m}], label, frequency_hz}
-  const [activeStack, setActiveStack] = useState(null);   // {layers:[...], label, frequency_hz}
-  const [lastSweep, setLastSweep] = useState(null);       // read by Page 7
-
-  // load the material library once for all pages
-  useEffect(() => {
-    getMaterials().then(setMaterials).catch((e) => setMaterialsError(e.message));
-  }, []);
-
-  const value = { materials, materialsError, activeSingle, setActiveSingle, activeStack, setActiveStack, lastSweep, setLastSweep };
-  return <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>;
+function readSessionMaterials() {
+  try {
+    const raw = sessionStorage.getItem(SESSION_MATERIALS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 }
 
-export const useWorkspace = () => useContext(WorkspaceContext);
+function writeSessionMaterials(list) {
+  try {
+    sessionStorage.setItem(SESSION_MATERIALS_KEY, JSON.stringify(list));
+  } catch {
+    /* ignore */
+  }
+}
+
+const EMPTY_WORKSPACE = {
+  materials: [],
+  materialsError: '',
+  sessionMaterials: [],
+  addSessionMaterial: () => {},
+  removeSessionMaterial: () => {},
+  activeSingle: null,
+  setActiveSingle: () => {},
+  activeStack: null,
+  setActiveStack: () => {},
+  lastSweep: null,
+  setLastSweep: () => {},
+};
+
+export function WorkspaceProvider({ children }) {
+  const [backendMaterials, setBackendMaterials] = useState([]);
+  const [materialsError, setMaterialsError] = useState('');
+  const [sessionMaterials, setSessionMaterials] = useState(readSessionMaterials);
+  const [activeSingle, setActiveSingle] = useState(null);
+  const [activeStack, setActiveStack] = useState(null);
+  const [lastSweep, setLastSweep] = useState(null);
+
+  useEffect(() => {
+    getMaterials()
+      .then((list) => setBackendMaterials(Array.isArray(list) ? list : []))
+      .catch((e) => setMaterialsError(e?.message || String(e)));
+  }, []);
+
+  const addSessionMaterial = (material) => {
+    setSessionMaterials((prev) => {
+      const next = [...prev.filter((m) => m.id !== material.id), material];
+      writeSessionMaterials(next);
+      return next;
+    });
+  };
+
+  const removeSessionMaterial = (id) => {
+    setSessionMaterials((prev) => {
+      const next = prev.filter((m) => m.id !== id);
+      writeSessionMaterials(next);
+      return next;
+    });
+  };
+
+  const backendIds = new Set(backendMaterials.map((m) => m.id));
+  const materials = [
+    ...backendMaterials,
+    ...sessionMaterials.filter((m) => !backendIds.has(m.id)),
+  ];
+
+  const value = {
+    materials,
+    materialsError,
+    sessionMaterials,
+    addSessionMaterial,
+    removeSessionMaterial,
+    activeSingle,
+    setActiveSingle,
+    activeStack,
+    setActiveStack,
+    lastSweep,
+    setLastSweep,
+  };
+
+  return (
+    <WorkspaceContext.Provider value={value}>
+      {children}
+    </WorkspaceContext.Provider>
+  );
+}
+
+export const useWorkspace = () => {
+  const ctx = useContext(WorkspaceContext);
+  return ctx ?? EMPTY_WORKSPACE;
+};

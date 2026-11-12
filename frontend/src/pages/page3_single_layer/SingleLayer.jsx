@@ -1,7 +1,12 @@
-// SingleLayer.jsx — Page 3: evaluate one uniform slab at one frequency (all numbers come from the Python backend).
+// SingleLayer.jsx — Page 3: evaluate one uniform slab at one frequency.
+// Defaults to the first material in the library.
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import MaterialSelect, { defaultMaterial, materialLabel, toMaterialSpec } from '../../components/MaterialSelect';// SingleLayer.jsx — Page 3: evaluate one uniform slab at one frequency (all numbers come from the Python backend).
+import MaterialSelect, {
+  defaultMaterial,
+  materialLabel,
+  toMaterialSpec,
+} from '../../components/MaterialSelect';
 import ResultCards from '../../components/ResultCards';
 import ResultsChart from '../../components/ResultsChart';
 import { useWorkspace } from '../../context/WorkspaceContext';
@@ -9,10 +14,28 @@ import { runSingleLayer } from '../../services/api';
 import { FREQ_UNITS, THICKNESS_UNITS, formatLength, toSI } from '../../utils/units';
 import '../../styles/pages345.css';
 
+const materialToSelectValue = (m) =>
+  m
+    ? { mode: 'library', id: m.id, sigma: '', epsR: '', muR: '' }
+    : defaultMaterial();
+
 export default function SingleLayer() {
-    const { materials, setActiveSingle } = useWorkspace();
+  const workspace = useWorkspace();
+  const materials = Array.isArray(workspace?.materials)
+    ? workspace.materials
+    : [];
+  const setActiveSingle =
+    typeof workspace?.setActiveSingle === 'function'
+      ? workspace.setActiveSingle
+      : () => {};
+
   const navigate = useNavigate();
-  const [material, setMaterial] = useState(defaultMaterial());
+
+  // Default to the first library material (or Copper if the list is empty yet —
+  // MaterialSelect will re-render once the list arrives).
+  const [material, setMaterial] = useState(() =>
+    materialToSelectValue(materials[0])
+  );
   const [freq, setFreq] = useState('1');
   const [freqUnit, setFreqUnit] = useState('GHz');
   const [thickness, setThickness] = useState('1');
@@ -32,7 +55,6 @@ export default function SingleLayer() {
       };
       const res = await runSingleLayer(body);
       setResult(res);
-      // share this design with Page 5 (Frequency-Response Analysis)
       setActiveSingle({
         label: `${materialLabel(material, materials)}, ${thickness} ${thicknessUnit}`,
         frequency_hz: body.frequency_hz,
@@ -94,11 +116,8 @@ export default function SingleLayer() {
                 Thickness is {result.thickness_over_skin_depth === null ? 'n/a' : result.thickness_over_skin_depth.toFixed(2)} skin depths;
                 σ/(ωε) = {result.conductor_ratio === null ? 'n/a' : result.conductor_ratio.toExponential(2)}.
                 Very large SE values are capped in the display; real shields are limited by seams and apertures, which this model excludes.
-            
                 The attenuation plot is a single-pass envelope and ignores internal reflections.
               </p>
-          
-             
 
               <ResultsChart
                 title="Field attenuation through the slab (single pass)"
@@ -107,14 +126,12 @@ export default function SingleLayer() {
                 xTitle="Depth into slab (µm)" yTitle="Relative amplitude"
               />
 
-               {/* hands the design just simulated to Page 5, which reads it from the shared workspace */}
               <div className="em-next-step">
                 <button type="button" className="em-btn" onClick={() => navigate('/frequency-analysis')}>
                   Analyse frequency response →
                 </button>
                 <p className="em-hint">Sweeps this {materialLabel(material, materials)} slab across a frequency band.</p>
               </div>
-            
             </section>
           )}
         </div>

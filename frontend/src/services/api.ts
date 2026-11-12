@@ -1,13 +1,10 @@
+// src/services/api.ts — the only module that talks to the FastAPI backend.
+// Requests go through the Vite /api proxy.
 
-export const API_BASE_URL = "http://localhost:8000";
+export const API_BASE_URL = "/api";
 
-// Material categories supported by the backend
-export type MaterialCategory =
-  | "Conductor"
-  | "Insulator"
-  | "Semiconductor"
+export type MaterialCategory = "Conductor" | "Insulator" | "Semiconductor";
 
-// Electromagnetic properties of a material
 export interface MaterialProperties {
   conductivity_s_m: number | null;
   relative_permittivity: number | null;
@@ -17,14 +14,12 @@ export interface MaterialProperties {
   mass_density: number | null;
 }
 
-// Source or reference for material data
 export interface MaterialSource {
   property: string;
   reference: string;
   url?: string | null;
 }
 
-// Properties measured at a particular frequency
 export interface FrequencyDependentProperties {
   frequency_hz: number;
   properties: MaterialProperties;
@@ -32,22 +27,23 @@ export interface FrequencyDependentProperties {
   sources: MaterialSource[];
 }
 
-// Complete material structure
 export interface Material {
   id: string;
   name: string;
   category: MaterialCategory;
+  grade?: string | null;
+  composition?: string | null;
   properties: MaterialProperties;
   reference_frequency_hz?: number | null;
   temperature_c?: number | null;
+  valid_frequency_min_hz?: number | null;
+  valid_frequency_max_hz?: number | null;
   sources: MaterialSource[];
   frequency_dependent_properties: FrequencyDependentProperties[];
 }
 
-// Data required to create a material
 export type MaterialCreate = Material;
 
-// Handle API responses and errors
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
@@ -58,38 +54,51 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => null);
-    throw new Error(
-      error?.detail || `API request failed: ${response.status}`
-    );
+    const body = await response.json().catch(() => ({} as any));
+    const detail = Array.isArray(body?.detail)
+      ? body.detail
+          .map((d: any) => `${(d.loc || []).slice(1).join(".")}: ${d.msg}`)
+          .join("; ")
+      : body?.detail || `API request failed: ${response.status}`;
+    throw new Error(detail);
   }
 
   return response.json() as Promise<T>;
 }
 
-// Fetch all materials, with optional filters
+// ---------------------------------------------------------
+// MATERIALS
+// ---------------------------------------------------------
 export function getMaterials(
   name?: string,
   category?: MaterialCategory
 ): Promise<Material[]> {
   const params = new URLSearchParams();
-
   if (name) params.set("name", name);
   if (category) params.set("category", category);
-
-  const query = params.toString();
-  return request<Material[]>(`/materials${query ? `?${query}` : ""}`);
+  const q = params.toString();
+  return request<Material[]>(`/materials${q ? `?${q}` : ""}`);
 }
 
-// Fetch one material by its ID
 export function getMaterial(materialId: string): Promise<Material> {
   return request<Material>(`/materials/${encodeURIComponent(materialId)}`);
 }
 
-// Add a custom material
 export function createMaterial(material: MaterialCreate): Promise<Material> {
   return request<Material>("/materials", {
     method: "POST",
     body: JSON.stringify(material),
   });
 }
+
+// ---------------------------------------------------------
+// SIMULATION
+// ---------------------------------------------------------
+export const runSingleLayer = (body: unknown) =>
+  request("/single-layer", { method: "POST", body: JSON.stringify(body) });
+
+export const runMultilayer = (body: unknown) =>
+  request("/multilayer", { method: "POST", body: JSON.stringify(body) });
+
+export const runSweep = (body: unknown) =>
+  request("/sweep", { method: "POST", body: JSON.stringify(body) });

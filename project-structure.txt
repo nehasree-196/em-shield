@@ -37,11 +37,13 @@
 |   |-- schemas.py
 |   |-- simulation.py
 |-- data
-|   |-- materials.json
-|   |-- materials_page2.json
+|   |-- materials_final.json
 |-- docs
 |   |-- README.md
 |-- frontend
+|   |-- .vite
+|   |   |-- deps_temp_e2104f3f
+|   |   |   |-- package.json
 |   |-- src
 |   |   |-- app
 |   |   |   |-- router.tsx
@@ -89,7 +91,6 @@
 |   |   |   |   |-- README.md
 |   |   |   |   |-- ResultsExport.tsx
 |   |   |-- services
-|   |   |   |-- api.js
 |   |   |   |-- api.ts
 |   |   |-- styles
 |   |   |   |-- global.css
@@ -126,3 +127,4 @@
 |-- package-lock.json
 |-- project-structure.txt
 |-- README.md
+|-- routes_simulation_recovered.txt

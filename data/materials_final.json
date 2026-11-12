@@ -206,26 +206,5 @@
             "magnetic_loss_tangent": 0,
             "mass_density": 7140
         }
-    },
-    {
-        "id": "custom-test-1794411044126",
-        "name": "Test",
-        "category": "Conductor",
-        "grade": null,
-        "composition": null,
-        "properties": {
-            "conductivity_s_m": 12.0,
-            "relative_permittivity": 123.0,
-            "relative_permeability": 1234.0,
-            "dielectric_loss_tangent": 12345.0,
-            "magnetic_loss_tangent": 123456.0,
-            "mass_density": 1234567.0
-        },
-        "reference_frequency_hz": null,
-        "temperature_c": null,
-        "valid_frequency_min_hz": null,
-        "valid_frequency_max_hz": null,
-        "sources": [],
-        "frequency_dependent_properties": []
     }
 ]

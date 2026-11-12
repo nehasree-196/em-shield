@@ -67,10 +67,11 @@ export function WorkspaceProvider({ children }) {
     });
   };
 
-  const backendIds = new Set(backendMaterials.map((m) => m.id));
+  // Session customs FIRST, then backend library. Dedupe by id.
+  const sessionIds = new Set(sessionMaterials.map((m) => m.id));
   const materials = [
-    ...backendMaterials,
-    ...sessionMaterials.filter((m) => !backendIds.has(m.id)),
+    ...sessionMaterials,
+    ...backendMaterials.filter((m) => !sessionIds.has(m.id)),
   ];
 
   const value = {

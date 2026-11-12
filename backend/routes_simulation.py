@@ -25,9 +25,9 @@ def _resolve(layers):
         raise HTTPException(status_code=404, detail=str(exc))
 
 
-@router.get("/materials")
-def get_materials():
-    return list_materials()  # delete this route if Page 2 already provides it
+# @router.get("/materials")
+# def get_materials():
+#     return list_materials()  # delete this route if Page 2 already provides it
 
 
 @router.post("/single-layer")

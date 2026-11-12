@@ -385,7 +385,7 @@ export default function MaterialLibrary() {
             <div
               key={material.id}
               style={{
-                border: "1px solid #ddd",
+                border: "1.5px solid #bbb",
                 borderRadius: "10px",
                 padding: "18px",
                 position: "relative",

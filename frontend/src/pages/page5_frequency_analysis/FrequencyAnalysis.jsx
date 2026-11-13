@@ -3,13 +3,59 @@ import { useState } from 'react';
 import ResultsChart from '../../components/ResultsChart';
 import { useWorkspace } from '../../context/WorkspaceContext';
 import { runSweep } from '../../services/api';
-import { FREQ_UNITS, formatFrequency, toSI } from '../../utils/units';
+import { FREQ_UNITS, formatFrequency, formatSE, toSI } from '../../utils/units';
 import '../../styles/pages345.css';
 
 const MAX_TABLE_ROWS = 200;
+// summary stats derived from the sweep response (display only)
+function summarize(res) {
+  const f = res.frequency_hz;
+ const se = res.shielding_effectiveness_db;
+  const target = res.target_se_db;
+  let worst = 0;
+  se.forEach((v, i) => { if (v < se[worst]) worst = i; });
+  const passCount = se.filter((v) => v >= target).length;
+  const longest = res.failing_ranges_hz.reduce(
+    (best, r) => (!best || r.end_hz - r.start_hz > best.end_hz - best.start_hz ? r : best),
+    null
+  );
+  return {
+    worstSE: se[worst],
+    worstF: f[worst],
+    margin: se[worst] - target,
+    passRate: (100 * passCount) / se.length,
+    longest,
+  };
+}
+
+// return a material spec with conductivity scaled by k
+function withSigma(spec, materials, k) {
+  let p = spec;
+  if (spec.material_id !== undefined && spec.sigma_s_per_m === undefined) {
+    const props = materials.find((m) => m.id === spec.material_id)?.properties;
+    if (!props) return spec; // cannot resolve, leave unchanged
+    p = {
+      sigma_s_per_m: props.conductivity_s_m ?? 0,
+      epsilon_r: props.relative_permittivity ?? 1,
+      mu_r: props.relative_permeability ?? 1,
+    };
+  }
+  return { ...p, sigma_s_per_m: p.sigma_s_per_m * k };
+}
+
+// four extra sweeps: thickness and conductivity at -10% / +10%
+async function runSensitivity(layers, body, materials) {
+  const thick = (k) => layers.map((l) => ({ ...l, thickness_m: l.thickness_m * k }));
+  const sigma = (k) => layers.map((l) => ({ ...l, material: withSigma(l.material, materials, k) }));
+  const call = (ls) => runSweep({ ...body, layers: ls });
+  const [tLo, tHi, sLo, sHi] = await Promise.all([
+    call(thick(0.9)), call(thick(1.1)), call(sigma(0.9)), call(sigma(1.1)),
+  ]);
+  return { thickness: { lo: tLo, hi: tHi }, conductivity: { lo: sLo, hi: sHi } };
+}
 
 export default function FrequencyAnalysis() {
-  const { activeSingle, activeStack, setLastSweep } = useWorkspace();
+  const { activeSingle, activeStack, setLastSweep, materials = [] } = useWorkspace();
   const [source, setSource] = useState('single');
   const [fStart, setFStart] = useState('1');
   const [fEnd, setFEnd] = useState('10');
@@ -20,8 +66,11 @@ export default function FrequencyAnalysis() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [sens, setSens] = useState(null);
+  const [sensParam, setSensParam] = useState('thickness');
 
-  const design = source === 'single' ? activeSingle : activeStack;
+   const design = source === 'single' ? activeSingle : activeStack;
+  const summary = result && result.target_se_db != null ? summarize(result) : null;
 
   async function run() {
     setError('');
@@ -34,10 +83,13 @@ export default function FrequencyAnalysis() {
         frequency_points: Number(points),
         spacing,
         target_se_db: Number(target),
+      
       };
       const res = await runSweep(body);
       setResult(res);
       setLastSweep({ source: design.label, request: body, response: res }); // read by Page 7
+      setSens(null);
+      runSensitivity(design.layers, body, materials).then(setSens).catch(() => setSens(null));
     } catch (e) {
       setError(e.message);
       setResult(null);
@@ -53,7 +105,7 @@ export default function FrequencyAnalysis() {
         <section className="em-panel" aria-label="Sweep settings">
           <h2>Sweep settings</h2>
           <label>Design source
-            <select className="em-input" value={source} onChange={(e) => { setSource(e.target.value); setResult(null); }}>
+            <select className="em-input" value={source} onChange={(e) => { setSource(e.target.value); setResult(null); setSens(null); }}>
               <option value="single">Single-layer slab (Page 3)</option>
               <option value="stack">Multilayer stack (Page 4)</option>
             </select>
@@ -101,14 +153,65 @@ export default function FrequencyAnalysis() {
                     </div>
                   )}
               </section>
+              {summary && (
+  <section className="em-panel" aria-label="Summary">
+    <div className="em-summary-row">
+      <div className="em-summary-card">
+        <span className="em-summary-label">Worst-case SE across band</span>
+        <strong>{formatSE(summary.worstSE)} @ {formatFrequency(summary.worstF)}</strong>
+      </div>
+      <div className="em-summary-card">
+        <span className="em-summary-label">Margin vs target</span>
+        <strong className={summary.margin >= 0 ? 'em-pass' : 'em-fail'}>
+          {summary.margin >= 0 ? '+' : '−'}{Math.abs(summary.margin).toFixed(2)} dB
+        </strong>
+      </div>
+      <div className="em-summary-card">
+        <span className="em-summary-label">Band pass rate</span>
+        <strong>{summary.passRate.toFixed(1)}% of band meets target</strong>
+      </div>
+      <div className="em-summary-card">
+        <span className="em-summary-label">Longest failing range</span>
+        <strong>
+          {summary.longest
+            ? `${formatFrequency(summary.longest.start_hz)} – ${formatFrequency(summary.longest.end_hz)}`
+            : 'None'}
+        </strong>
+      </div>
+    </div>
+  </section>
+)}
               <section className="em-panel" aria-label="Response curves">
+               
                 <ResultsChart title="Shielding effectiveness vs frequency" x={result.frequency_hz}
-                  traces={[{ name: 'SE', y: result.shielding_effectiveness_db }]} xTitle="Frequency" yTitle="SE (dB)"
+                 traces={[{ name: 'SE', y: result.shielding_effectiveness_db }]}
+                  xTitle="Frequency (Hz)" yTitle="Shielding effectiveness, SE (dB)"
                   logX={spacing === 'log'} target={result.target_se_db} failRanges={result.failing_ranges_hz} />
                 <ResultsChart title="Reflection, transmission and absorption" x={result.frequency_hz}
                   traces={[{ name: 'R', y: result.reflection_power }, { name: 'T', y: result.transmission_power }, { name: 'A', y: result.absorption_power }]}
-                  xTitle="Frequency" yTitle="Power fraction" logX={spacing === 'log'} />
+                 xTitle="Frequency (Hz)" yTitle="Power fraction (unitless, 0–1)" logX={spacing === 'log'} />
               </section>
+              {sens && (
+  <section className="em-panel" aria-label="Sensitivity">
+    <label>Vary
+      <select className="em-input" value={sensParam} onChange={(e) => setSensParam(e.target.value)}>
+        <option value="thickness">Thickness ±10%</option>
+        <option value="conductivity">Conductivity ±10%</option>
+      </select>
+    </label>
+    <ResultsChart
+      title={`SE sensitivity: ${sensParam} ±10%`}
+      x={result.frequency_hz}
+      traces={[
+        { name: '−10%', y: sens[sensParam].lo.shielding_effectiveness_db },
+        { name: 'Nominal', y: result.shielding_effectiveness_db },
+        { name: '+10%', y: sens[sensParam].hi.shielding_effectiveness_db },
+      ]}
+      xTitle="Frequency (Hz)" yTitle="Shielding effectiveness, SE (dB)"
+      logX={spacing === 'log'} target={result.target_se_db}
+    />
+  </section>
+)}
               <section className="em-panel" aria-label="Data table">
                 <h2>Data (first {Math.min(MAX_TABLE_ROWS, result.frequency_hz.length)} of {result.frequency_hz.length} rows; full export on Page 7)</h2>
                 <div className="em-table-wrap">

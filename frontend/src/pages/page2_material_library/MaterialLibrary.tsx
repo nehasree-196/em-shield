@@ -170,21 +170,19 @@ export default function MaterialLibrary() {
   }
 
   return (
-    <div style={{ padding: "24px" }}>
-      <h1>Material Library</h1>
-      <p>
-        Browse the material properties. Add any custom materials you need (they
-        remain available for this session), then proceed.
-      </p>
+    <div className="dashboard">
+      <div className="dashboard-heading">
+        <div>
+          <p className="eyebrow">MATERIAL DATABASE</p>
+          <h2>Material Library</h2>
+          <p>
+            Browse, explore, and select materials based on their electromagnetic
+            properties. You can also add custom materials to the library.
+          </p>
+        </div>
+      </div>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "12px",
-          flexWrap: "wrap",
-          margin: "24px 0",
-        }}
-      >
+      <div className="material-toolbar">
         <input
           type="text"
           placeholder="Search materials by name..."
@@ -205,12 +203,12 @@ export default function MaterialLibrary() {
           <option value="Semiconductor">Semiconductor</option>
         </select>
         <button
-          type="button"
-          onClick={() => {
-            setShowCustomForm((prev) => !prev);
-            setFormError("");
-          }}
-          style={{ padding: "10px 16px", cursor: "pointer" }}
+    type="button"
+    className="primary-button"
+    onClick={() => {
+      setShowCustomForm((previous) => !previous);
+      setFormError("");
+    }}
         >
           {showCustomForm ? "Close Form" : "+ Add Custom Material"}
         </button>
@@ -340,8 +338,9 @@ export default function MaterialLibrary() {
           {formError && <p style={{ color: "red" }}>{formError}</p>}
 
           <button
-            type="submit"
-            style={{ padding: "10px 16px", marginTop: "16px" }}
+            type="button"
+            className="primary-button"
+            onClick={handleNext}
           >
             Add Material
           </button>
@@ -370,13 +369,7 @@ export default function MaterialLibrary() {
         <p>No materials found. Try another search or category.</p>
       )}
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-          gap: "16px",
-        }}
-      >
+      <div className="workspace-grid">
         {displayedMaterials.map((material) => {
           const isExpanded = expandedMaterials.has(material.id);
           const isSession = sessionIds.has(material.id);
@@ -384,12 +377,7 @@ export default function MaterialLibrary() {
           return (
             <div
               key={material.id}
-              style={{
-                border: "1.5px solid #bbb",
-                borderRadius: "10px",
-                padding: "18px",
-                position: "relative",
-              }}
+              className="workspace-card"
             >
               <div
                 style={{
@@ -488,12 +476,8 @@ export default function MaterialLibrary() {
       <div style={{ marginTop: "28px", textAlign: "right" }}>
         <button
           type="button"
+          className="primary-button"
           onClick={handleNext}
-          style={{
-            padding: "12px 28px",
-            fontSize: "16px",
-            cursor: "pointer",
-          }}
         >
           Next →
         </button>

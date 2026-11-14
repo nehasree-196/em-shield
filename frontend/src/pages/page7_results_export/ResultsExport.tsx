@@ -17,9 +17,9 @@ export default function ResultsExport() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const single = report?.single;
-  const stack = report?.stack;
-  const sweep = report?.sweep;
+  const single: any = report?.single;
+  const stack: any = report?.stack;
+  const sweep: any = report?.sweep;
   const any = !!(single || stack || sweep);
 
   async function download() {

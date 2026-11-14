@@ -1216,3 +1216,36 @@ textarea:focus-visible {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.3px;
 }
+
+/* Compact inline layer breakdown (shown in the pinned detail card). */
+.opt-detail-layers-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.opt-detail-layer-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  background: var(--panel-light);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.opt-detail-layer-chip strong {
+  color: var(--deep-purple);
+  font-size: 11px;
+}
+
+.opt-detail-layer-chip span {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Remove the now-unneeded hide rule, since the compact mode renders inline
+   chips instead of the <ol>. (If the rule was added, delete it.) */

@@ -67,9 +67,10 @@ const simulationModes = [
 // Team members in the original order. Leader is indicated inline as "(Leader)".
 const groupMembers = [
   { name: "Pragya Patni",             roll: "2401EE15", leader: true },
+  { name: "Nimmagadda Kumuda Hasini", roll: "2401EE13", leader: false },
   { name: "Neha Sree Kuppam",         roll: "2402PC02", leader: false },
   { name: "Kodavath Yuvaraj Naik",    roll: "2401EE12", leader: false },
-  { name: "Nimmagadda Kumuda Hasini", roll: "2401EE13", leader: false },
+  
   { name: "Indurupati Prabhudeva",    roll: "2401EE27", leader: false },
 ];
 

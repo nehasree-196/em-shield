@@ -5,7 +5,7 @@ import { FileDown } from 'lucide-react';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js-basic-dist';
 import LayerEditor, { newLayer } from '../../components/LayerEditor';
-import { materialLabel, toMaterialSpec } from '../../components/MaterialSelect';
+import { materialLabel, toResolvableMaterialSpec } from '../../components/MaterialSelect';
 import ResultCards from '../../components/ResultCards';
 import { useWorkspace } from '../../context/WorkspaceContext';
 import { runMultilayer, runMultilayerAnalysis } from '../../services/api';
@@ -13,7 +13,7 @@ import { FREQ_UNITS, THICKNESS_UNITS, formatFrequency, formatLength, formatSE, t
 import '../../styles/pages345.css';
 
 export default function Multilayer() {
-  const { materials, setActiveStack, stageForReport } = useWorkspace();
+  const { materials, sessionMaterials = [], setActiveStack, stageForReport } = useWorkspace();
   const navigate = useNavigate();
   const [layers, setLayers] = useState(() => [newLayer()]);
   const [freq, setFreq] = useState('1');
@@ -29,7 +29,7 @@ export default function Multilayer() {
 
   function buildApiLayers() {
     return layers.map((l) => ({
-      material: toMaterialSpec(l.material),
+      material: toResolvableMaterialSpec(l.material, sessionMaterials),
       thickness_m: toSI(l.thickness, l.unit, THICKNESS_UNITS),
     }));
   }

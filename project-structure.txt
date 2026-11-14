@@ -2,6 +2,8 @@
 |   |-- workflows
 |   |   |-- README.md
 |-- backend
+|   |-- data
+|   |   |-- materials_final.json
 |   |-- optimization
 |   |   |-- __init__.py
 |   |   |-- optimizer.py
@@ -28,8 +30,6 @@
 |   |-- routes_simulation.py
 |   |-- schemas.py
 |   |-- simulation.py
-|-- data
-|   |-- materials_final.json
 |-- docs
 |   |-- README.md
 |-- frontend
@@ -50,6 +50,7 @@
 |   |   |   |-- ResultsChart.jsx
 |   |   |-- context
 |   |   |   |-- README.md
+|   |   |   |-- WorkspaceContext.d.ts
 |   |   |   |-- WorkspaceContext.jsx
 |   |   |-- pages
 |   |   |   |-- page1_dashboard
@@ -93,13 +94,14 @@
 |   |   |   |-- units.js
 |   |   |-- App.tsx
 |   |   |-- main.tsx
+|   |   |-- vite-env.d.ts
 |   |-- index.html
 |   |-- package.json
 |   |-- package-lock.json
 |   |-- README.md
-|   |-- tsconfig.app.json
 |   |-- tsconfig.json
-|   |-- tsconfig.node.json
+|   |-- tsconfig.tsbuildinfo
+|   |-- vercel.json
 |   |-- vite.config.ts
 |-- tests
 |   |-- conftest.py
@@ -111,4 +113,3 @@
 |-- package-lock.json
 |-- project-structure.txt
 |-- README.md
-|-- routes_simulation_recovered.txt

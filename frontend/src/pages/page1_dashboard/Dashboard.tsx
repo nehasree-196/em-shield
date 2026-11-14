@@ -93,7 +93,7 @@ export default function Dashboard() {
             ELECTROMAGNETIC SHIELDING ANALYSIS
           </p>
 
-          <h2>Welcome to EM-Shield</h2>
+          <h2>Welcome to EM-Shield!</h2>
 
           <p>
             Explore electromagnetic shielding performance,

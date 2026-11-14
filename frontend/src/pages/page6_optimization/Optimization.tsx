@@ -326,7 +326,7 @@ export default function Optimization() {
                         ? "Loading all candidates…"
                         : showAllCandidates
                           ? `Show top ${req.top_k || 10} only`
-                          : `View all candidates (up to ${ALL_CANDIDATES_LIMIT})`}
+                          : `View top ${ALL_CANDIDATES_LIMIT} candidates`}
                     </button>
                   </div>
                 )}

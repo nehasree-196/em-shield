@@ -18,9 +18,7 @@ function readSessionMaterials() {
 function writeSessionMaterials(list) {
   try {
     sessionStorage.setItem(SESSION_MATERIALS_KEY, JSON.stringify(list));
-  } catch {
-    /* ignore */
-  }
+  } catch { /* ignore */ }
 }
 
 const EMPTY_WORKSPACE = {
@@ -35,6 +33,9 @@ const EMPTY_WORKSPACE = {
   setActiveStack: () => {},
   lastSweep: null,
   setLastSweep: () => {},
+  report: { single: null, stack: null, sweep: null },
+  stageForReport: () => {},
+  clearReport: () => {},
 };
 
 export function WorkspaceProvider({ children }) {
@@ -44,6 +45,7 @@ export function WorkspaceProvider({ children }) {
   const [activeSingle, setActiveSingle] = useState(null);
   const [activeStack, setActiveStack] = useState(null);
   const [lastSweep, setLastSweep] = useState(null);
+  const [report, setReport] = useState({ single: null, stack: null, sweep: null });
 
   useEffect(() => {
     getMaterials()
@@ -67,7 +69,12 @@ export function WorkspaceProvider({ children }) {
     });
   };
 
-  // Session customs FIRST, then backend library. Dedupe by id.
+  const stageForReport = (key, value) => {
+    setReport((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const clearReport = () => setReport({ single: null, stack: null, sweep: null });
+
   const sessionIds = new Set(sessionMaterials.map((m) => m.id));
   const materials = [
     ...sessionMaterials,
@@ -86,6 +93,9 @@ export function WorkspaceProvider({ children }) {
     setActiveStack,
     lastSweep,
     setLastSweep,
+    report,
+    stageForReport,
+    clearReport,
   };
 
   return (

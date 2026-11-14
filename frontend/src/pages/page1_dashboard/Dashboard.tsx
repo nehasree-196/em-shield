@@ -65,11 +65,11 @@ const simulationModes = [
 ];
 
 const groupMembers = [
+  { name: "Nimmagadda Kumuda Hasini", roll: "2401EE13", leader: false },
+  { name: "Neha Sree Kuppam", roll: "2402PC02", leader: false },
   { name: "Pragya Patni", roll: "2401EE15", leader: true },
   { name: "Kodavath Yuvaraj Naik", roll: "2401EE12", leader: false },
-  { name: "Neha Sree Kuppam", roll: "2402PC02", leader: false },
-  { name: "Nimmagadda Kumuda Hasini", roll: "2401EE13", leader: false },
-  { name: "Prabhudeva Indurupati", roll: "2401EE27", leader: false },
+  { name: "Indurupati Prabhudeva", roll: "2401EE27", leader: false },
 ];
 
 export default function Dashboard() {

@@ -203,12 +203,12 @@ export default function MaterialLibrary() {
           <option value="Semiconductor">Semiconductor</option>
         </select>
         <button
-    type="button"
-    className="primary-button"
-    onClick={() => {
-      setShowCustomForm((previous) => !previous);
-      setFormError("");
-    }}
+          type="button"
+          className="primary-button"
+          onClick={() => {
+            setShowCustomForm((previous) => !previous);
+            setFormError("");
+          }}
         >
           {showCustomForm ? "Close Form" : "+ Add Custom Material"}
         </button>
@@ -338,9 +338,9 @@ export default function MaterialLibrary() {
           {formError && <p style={{ color: "red" }}>{formError}</p>}
 
           <button
-            type="button"
+            type="submit"
             className="primary-button"
-            onClick={handleNext}
+            style={{ marginTop: "16px" }}
           >
             Add Material
           </button>
@@ -375,10 +375,7 @@ export default function MaterialLibrary() {
           const isSession = sessionIds.has(material.id);
 
           return (
-            <div
-              key={material.id}
-              className="workspace-card"
-            >
+            <div key={material.id} className="workspace-card">
               <div
                 style={{
                   display: "flex",

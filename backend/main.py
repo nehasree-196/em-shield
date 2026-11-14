@@ -23,7 +23,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://em-shield-5yay.vercel.app/",
+        "https://em-shield-5yay.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],

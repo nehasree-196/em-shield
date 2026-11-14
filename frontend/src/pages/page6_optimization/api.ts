@@ -1,5 +1,5 @@
 // api.ts
-import type { Material, OptimizationRequest, RunResult, FilterRequest } from "./types";
+import type { Material, OptimizationRequest, RunResult, FilterRequest, Candidate } from "./types";
 
 const API = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 

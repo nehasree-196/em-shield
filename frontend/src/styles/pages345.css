@@ -33,3 +33,9 @@
 .em-notice { background: #fff7e0; border: 1px solid #f0d78a; border-radius: 10px; padding: 12px; color: #5c4400; }
 .em-results { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 .em-next-step { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
+.em-summary-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.em-summary-item { background: #fff; border: 1px solid #d3d9f7; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+.em-summary-value { font-size: 1.05rem; color: #2a1a66; }
+.em-tone-pass { color: #15803d; }
+.em-tone-warn { color: #b45309; }
+.em-tone-fail { color: #b42318; }

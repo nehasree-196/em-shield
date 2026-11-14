@@ -102,3 +102,6 @@ export const runMultilayer = (body: unknown) =>
 
 export const runSweep = (body: unknown) =>
   request("/sweep", { method: "POST", body: JSON.stringify(body) });
+
+export const runMultilayerAnalysis = (body: unknown) =>
+  request("/multilayer/analysis", { method: "POST", body: JSON.stringify(body) });

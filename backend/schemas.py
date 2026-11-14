@@ -141,7 +141,21 @@ class SweepRequest(BaseModel):
             raise ValueError("frequency_start_hz must be smaller than frequency_end_hz")
         return self
 
+class MultilayerAnalysisRequest(BaseModel):
+    """Band + target analysis for the Multilayer page."""
+    layers: list[LayerSpec] = Field(min_length=1, max_length=20)
+    frequency_hz: float = Field(gt=0, le=1e12)            # evaluation frequency for per-layer contribution
+    frequency_start_hz: float = Field(gt=0, le=1e12)
+    frequency_end_hz: float = Field(gt=0, le=1e12)
+    frequency_points: int = Field(default=201, ge=2, le=1000)
+    spacing: Literal["log", "linear"] = "log"
+    target_se_db: float = Field(ge=0)
 
+    @model_validator(mode="after")
+    def start_below_end(self):
+        if self.frequency_start_hz >= self.frequency_end_hz:
+            raise ValueError("frequency_start_hz must be smaller than frequency_end_hz")
+        return self
 # =========================================================
 # PAGE 6 — OPTIMIZATION SCHEMAS
 # =========================================================

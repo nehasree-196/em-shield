@@ -2,7 +2,6 @@
 import numpy as np
 from simulation import ETA0, LN10, failing_ranges, layer_properties, pack_result
 
-
 def stack_response(freq_hz, layers):
     """layers: ordered list of (sigma, eps_r, mu_r, thickness_m) from the incident side to the exit side.
 

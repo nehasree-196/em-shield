@@ -21,11 +21,11 @@ export default function ResultsChart({ title, x, traces, xTitle, yTitle, logX = 
       data={traces.map((t, i) => ({ x, y: t.y, name: t.name, type: 'scatter', mode: 'lines', line: { color: COLORS[i % COLORS.length], width: 2 } }))}
       layout={{
         title: { text: title, font: { size: 15 } },
-        autosize: true, height: 340, margin: { l: 60, r: 20, t: 40, b: 50 },
+        autosize: true, height: 380, margin: { l: 70, r: 20, t: 40, b: 70 },
         paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(255,255,255,0.6)',
-        xaxis: { title: xTitle, type: logX ? 'log' : 'linear', ticksuffix: logX ? 'Hz' : '' },
-        yaxis: { title: yTitle, range: yRange || undefined },
-        legend: { orientation: 'h', y: -0.25 }, shapes,
+        xaxis: { title: { text: xTitle, font: { size: 13 }, standoff: 10 }, type: logX ? 'log' : 'linear', ticksuffix: logX ? 'Hz' : '', exponentformat: logX ? 'SI' : 'B', automargin: true, showline: true, mirror: true, gridcolor: 'rgba(0,0,0,0.08)' },
+        yaxis: { title: { text: yTitle, font: { size: 13 }, standoff: 10 }, range: yRange || undefined, automargin: true, showline: true, mirror: true, gridcolor: 'rgba(0,0,0,0.08)' },
+        legend: { orientation: 'h', y: -0.35 }, shapes,
       }}
       config={{ responsive: true, displaylogo: false }}
       useResizeHandler

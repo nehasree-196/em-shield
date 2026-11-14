@@ -18,6 +18,38 @@ const materialToSelectValue = (m) =>
   m
     ? { mode: 'library', id: m.id, sigma: '', epsR: '', muR: '' }
     : defaultMaterial();
+const SLAB_COLORS = {
+  aluminium: ['#9aa7bd', '#5f6f8a'],
+  bakelite: ['#8b5a3c', '#4a2c18'],
+  brass: ['#d4a73a', '#8f6a12'],
+  bronze: ['#b9733a', '#6b3b14'],
+  copper: ['#e08a5a', '#a24a1e'],
+  ferrite: ['#4b4f5c', '#1f2230'],
+  fr4: ['#3f9a5a', '#1c5a30'],
+  gold: ['#f0c02e', '#b8860b'],
+  graphite: ['#5a5f6b', '#2a2d35'],
+  nickel: ['#8fa3a8', '#566a70'],
+  platinum: ['#a9b4c0', '#6b7886'],
+  pvc_plastic: ['#4aa3d8', '#1f6a9a'],
+  silicone: ['#d96fa8', '#9a3a72'],
+  silver: ['#b5bec9', '#7a8696'],
+  stainless_steel: ['#7f8c99', '#46525e'],
+  zinc: ['#7aa0b8', '#3f6580'],
+};
+// fallback by category, then the original purple
+const CATEGORY_COLORS = {
+  Conductor: ['#7b63ff', '#4a2fd1'],
+  Insulator: ['#3f9a5a', '#1c5a30'],
+  Semiconductor: ['#1f9d8a', '#0f5f54'],
+};
+const DEFAULT_SLAB = ['#7b63ff', '#4a2fd1'];
+
+function slabStyle(material, materials) {
+  const id = material?.mode === 'library' ? material.id : null;
+  const category = materials.find((m) => m.id === id)?.category;
+  const [a, b] = SLAB_COLORS[id] || CATEGORY_COLORS[category] || DEFAULT_SLAB;
+  return { background: `linear-gradient(90deg, ${a}, ${b})` };
+}
 
 export default function SingleLayer() {
   const workspace = useWorkspace();
@@ -74,7 +106,8 @@ export default function SingleLayer() {
     <div className="em-page">
       <h1>Single-Layer Simulator</h1>
       <div className="em-grid">
-        <section className="em-panel" aria-label="Simulation inputs">
+        <div className="em-side">
+        <section className="em-panel" aria-label="Simulation inputs">   
           <h2>Inputs</h2>
           <MaterialSelect value={material} onChange={setMaterial} />
           <label>Frequency
@@ -101,10 +134,37 @@ export default function SingleLayer() {
             <li>No apertures, seams or edges</li>
           </ul>
         </section>
+        {result && (
+  <section className="em-panel" aria-label="Key numbers and model notes">
+    <h2>Key numbers</h2>
+    <ul className="em-keynums">
+      <li>
+        <span>Skin depth, δ = √(2/ωμσ)</span>
+        <strong>{formatLength(result.skin_depth_good_conductor_m)}</strong>
+        <small>Cross-check only</small>
+      </li>
+      <li>
+        <span>Thickness in skin depths (t/δ)</span>
+        <strong>{result.thickness_over_skin_depth === null ? 'n/a' : result.thickness_over_skin_depth.toFixed(2)}</strong>
+      </li>
+      <li>
+        <span>Conduction ratio, σ/(ωε)</span>
+        <strong>{result.conductor_ratio === null ? 'n/a' : result.conductor_ratio.toExponential(2)}</strong>
+      </li>
+    </ul>
+    <h2>Model notes</h2>
+    <ul className="em-assumptions">
+      <li>Very large SE values are capped in the display.</li>
+      <li>Real shields are limited by seams and apertures, which this model excludes.</li>
+      <li>The attenuation plot is a single-pass envelope and ignores internal reflections.</li>
+    </ul>
+  </section>
+)}
+</div>
 
         <div className="em-results">
           <section className="em-panel" aria-label="Simulation control">
-            <div className="em-slab">{materialLabel(material, materials)} slab, {thickness} {thicknessUnit}</div>
+           <div className="em-slab" style={slabStyle(material, materials)}>{materialLabel(material, materials)} slab, {thickness} {thicknessUnit}</div>
             <button type="button" className="em-btn" onClick={run} disabled={loading}>{loading ? 'Running…' : 'Run Simulation'}</button>
             {error && <p className="em-error" role="alert">{error}</p>}
           </section>
@@ -113,19 +173,13 @@ export default function SingleLayer() {
             <section className="em-panel" aria-label="Results">
               <h2>Results at {freq} {freqUnit}</h2>
               <ResultCards result={result} showSkinDepth />
-              <p className="em-hint">
-                Good-conductor skin depth √(2/ωμσ) = {formatLength(result.skin_depth_good_conductor_m)} (cross-check only).
-                Thickness is {result.thickness_over_skin_depth === null ? 'n/a' : result.thickness_over_skin_depth.toFixed(2)} skin depths;
-                σ/(ωε) = {result.conductor_ratio === null ? 'n/a' : result.conductor_ratio.toExponential(2)}.
-                Very large SE values are capped in the display; real shields are limited by seams and apertures, which this model excludes.
-                The attenuation plot is a single-pass envelope and ignores internal reflections.
-              </p>
+            
 
               <ResultsChart
                 title="Field attenuation through the slab (single pass)"
                 x={result.profile_z_m.map((z) => z * 1e6)}
                 traces={[{ name: '|E(z)| / |E(0)|', y: result.profile_relative_amplitude }]}
-                xTitle="Depth into slab (µm)" yTitle="Relative amplitude"
+                xTitle="Depth into slab, z (µm)" yTitle="Relative field amplitude |E(z)| / |E(0)| (unitless)"
               />
 
               <div className="em-next-step">

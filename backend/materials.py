@@ -5,7 +5,7 @@ from pathlib import Path
 
 from schemas import MaterialCreate
 
-DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "materials_final.json"
+DATA_FILE = Path(__file__).resolve().parent / "data" / "materials_final.json"
 DATA_DIR = DATA_FILE.parent
 
 

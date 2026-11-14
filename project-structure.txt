@@ -1,22 +1,7 @@
 ﻿|-- .github
 |   |-- workflows
 |   |   |-- README.md
-|-- .pytest_cache
-|   |-- v
-|   |   |-- cache
-|   |   |   |-- nodeids
-|   |-- .gitignore
-|   |-- CACHEDIR.TAG
-|   |-- README.md
 |-- backend
-|   |-- .pytest_cache
-|   |   |-- v
-|   |   |   |-- cache
-|   |   |   |   |-- lastfailed
-|   |   |   |   |-- nodeids
-|   |   |-- .gitignore
-|   |   |-- CACHEDIR.TAG
-|   |   |-- README.md
 |   |-- optimization
 |   |   |-- __init__.py
 |   |   |-- optimizer.py
@@ -123,7 +108,6 @@
 |   |-- test_simulation.py
 |-- .gitignore
 |-- DO_THIS_BEFORE_PUSHING
-|-- oblique_backup.patch
 |-- package-lock.json
 |-- project-structure.txt
 |-- README.md

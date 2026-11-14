@@ -1,11 +1,46 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  ArrowRight,
+  Atom,
+  Layers3,
+  Boxes,
+  Gauge,
+  X,
+} from "lucide-react";
 import { type Material, type MaterialCategory } from "../../services/api";
 import { useWorkspace } from "../../context/WorkspaceContext";
 
 function formatProperty(value: number | null | undefined): string {
   return value == null ? "—" : value.toLocaleString();
 }
+
+const SIMULATION_OPTIONS = [
+  {
+    title: "Manage Materials",
+    description: "Add custom materials or inspect the material library.",
+    path: "/materials",
+    icon: Atom,
+  },
+  {
+    title: "Single-Layer Simulation",
+    description: "Analyse one material layer.",
+    path: "/single-layer",
+    icon: Layers3,
+  },
+  {
+    title: "Multilayer Simulation",
+    description: "Design a stack of material layers.",
+    path: "/multilayer",
+    icon: Boxes,
+  },
+  {
+    title: "Material Optimization",
+    description: "Find an optimized material configuration.",
+    path: "/optimization",
+    icon: Gauge,
+  },
+];
 
 export default function MaterialLibrary() {
   const mode = new URLSearchParams(window.location.search).get("mode");
@@ -169,6 +204,11 @@ export default function MaterialLibrary() {
     }
   }
 
+  function chooseSimulation(path: string) {
+    setShowDestinationChoice(false);
+    navigate(path);
+  }
+
   return (
     <div className="dashboard">
       <div className="dashboard-heading">
@@ -213,7 +253,7 @@ export default function MaterialLibrary() {
           {showCustomForm ? "Close Form" : "+ Add Custom Material"}
         </button>
       </div>
-      
+
       <p
         style={{
           fontSize: "0.85rem",
@@ -393,14 +433,15 @@ export default function MaterialLibrary() {
               key={material.id}
               className="workspace-card"
               onClick={() => toggleExpanded(material.id)}
-              style={{ 
-                cursor: "pointer", 
+              style={{
+                cursor: "pointer",
                 transition: "all 0.2s ease",
                 position: "relative",
-                // Elevate the active card so the dropdown sits perfectly on top
                 zIndex: isExpanded ? 50 : 1,
                 borderColor: isExpanded ? "#5b3df5" : undefined,
-                boxShadow: isExpanded ? "0 8px 24px rgba(91, 61, 245, 0.15)" : undefined,
+                boxShadow: isExpanded
+                  ? "0 8px 24px rgba(91, 61, 245, 0.15)"
+                  : undefined,
               }}
             >
               <div
@@ -425,19 +466,24 @@ export default function MaterialLibrary() {
                     color: isExpanded ? "#5b3df5" : "inherit",
                   }}
                 >
-                  {material.name} <span style={{ 
-                    display: "inline-block",
-                    transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", 
-                    transition: "transform 0.3s ease",
-                    fontSize: "0.8rem"
-                  }}>▼</span>
+                  {material.name}{" "}
+                  <span
+                    style={{
+                      display: "inline-block",
+                      transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+                      transition: "transform 0.3s ease",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    ▼
+                  </span>
                 </button>
 
                 {isSession && (
                   <button
                     type="button"
                     onClick={(e) => {
-                      e.stopPropagation(); // Prevents the dropdown from opening
+                      e.stopPropagation();
                       removeSessionMaterial(material.id);
                     }}
                     title="Remove this session material"
@@ -470,13 +516,12 @@ export default function MaterialLibrary() {
                 )}
               </p>
 
-              {/* FLOATING DROPDOWN PANEL */}
               {isExpanded && (
                 <div
-                  onClick={(e) => e.stopPropagation()} // Stop clicks from closing the dropdown
+                  onClick={(e) => e.stopPropagation()}
                   style={{
                     position: "absolute",
-                    top: "calc(100% - 10px)", // Drops down just below the card
+                    top: "calc(100% - 10px)",
                     left: "-1px",
                     right: "-1px",
                     backgroundColor: "#ffffff",
@@ -488,12 +533,34 @@ export default function MaterialLibrary() {
                     animation: "fadeInDown 0.2s ease-out forwards",
                   }}
                 >
-                  <h3 style={{ fontSize: "0.95rem", marginBottom: "16px", color: "#1e293b", display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#5b3df5" }}></span>
+                  <h3
+                    style={{
+                      fontSize: "0.95rem",
+                      marginBottom: "16px",
+                      color: "#1e293b",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: "6px",
+                        height: "6px",
+                        borderRadius: "50%",
+                        backgroundColor: "#5b3df5",
+                      }}
+                    ></span>
                     Electromagnetic Properties
                   </h3>
-                  
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      gap: "12px",
+                    }}
+                  >
                     {[
                       { label: "Conductivity", value: material.properties.conductivity_s_m, unit: "S/m" },
                       { label: "Rel. Permittivity", value: material.properties.relative_permittivity, unit: "" },
@@ -502,12 +569,44 @@ export default function MaterialLibrary() {
                       { label: "Magnetic Loss", value: material.properties.magnetic_loss_tangent, unit: "" },
                       { label: "Mass Density", value: material.properties.mass_density, unit: "kg/m³" },
                     ].map((prop, idx) => (
-                      <div key={idx} style={{ display: "flex", flexDirection: "column", padding: "10px", background: "#f8fafc", borderRadius: "8px" }}>
-                        <span style={{ color: "#64748b", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "4px" }}>
+                      <div
+                        key={idx}
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          padding: "10px",
+                          background: "#f8fafc",
+                          borderRadius: "8px",
+                        }}
+                      >
+                        <span
+                          style={{
+                            color: "#64748b",
+                            fontSize: "0.75rem",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.5px",
+                            marginBottom: "4px",
+                          }}
+                        >
                           {prop.label}
                         </span>
-                        <span style={{ fontWeight: 600, color: "#0f172a", fontSize: "0.95rem" }}>
-                          {formatProperty(prop.value)} <span style={{ fontSize: "0.8em", color: "#64748b", fontWeight: "normal" }}>{prop.unit}</span>
+                        <span
+                          style={{
+                            fontWeight: 600,
+                            color: "#0f172a",
+                            fontSize: "0.95rem",
+                          }}
+                        >
+                          {formatProperty(prop.value)}{" "}
+                          <span
+                            style={{
+                              fontSize: "0.8em",
+                              color: "#64748b",
+                              fontWeight: "normal",
+                            }}
+                          >
+                            {prop.unit}
+                          </span>
                         </span>
                       </div>
                     ))}
@@ -520,58 +619,64 @@ export default function MaterialLibrary() {
       </div>
 
       <div style={{ marginTop: "28px", textAlign: "right" }}>
-        <button
-          type="button"
-          className="primary-button"
-          onClick={handleNext}
-        >
+        <button type="button" className="primary-button" onClick={handleNext}>
           Next →
         </button>
       </div>
 
       {showDestinationChoice && (
         <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 1000,
-          }}
+          className="simulation-modal-overlay"
+          onClick={() => setShowDestinationChoice(false)}
         >
           <div
+            className="simulation-modal"
             role="dialog"
             aria-modal="true"
-            style={{
-              background: "white",
-              padding: "28px",
-              borderRadius: "12px",
-              width: "min(90%, 420px)",
-            }}
+            aria-labelledby="simulation-modal-title"
+            onClick={(e) => e.stopPropagation()}
           >
-            <h2>Choose Simulation Type</h2>
-            <p>Where would you like to continue?</p>
-
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "12px" }}
-            >
-              <button type="button" onClick={() => navigate("/single-layer")}>
-                Single-Layer Simulation
-              </button>
-              <button type="button" onClick={() => navigate("/multilayer")}>
-                Multilayer Simulation
-              </button>
-              <button type="button" onClick={() => navigate("/optimization")}>
-                Material Optimization
-              </button>
+            <div className="simulation-modal-header">
+              <div>
+                <p className="eyebrow">NEW SIMULATION</p>
+                <h3 id="simulation-modal-title">Choose Simulation Type</h3>
+                <p>
+                  Select how you want to analyse electromagnetic shielding
+                  performance.
+                </p>
+              </div>
               <button
-                type="button"
+                className="modal-close-button"
                 onClick={() => setShowDestinationChoice(false)}
+                aria-label="Close popup"
               >
-                Cancel
+                <X size={19} />
               </button>
+            </div>
+
+            <div className="simulation-modal-options">
+              {SIMULATION_OPTIONS.map((opt) => {
+                const Icon = opt.icon;
+                return (
+                  <button
+                    key={opt.path}
+                    className="simulation-modal-option"
+                    onClick={() => chooseSimulation(opt.path)}
+                  >
+                    <span className="simulation-option-icon">
+                      <Icon size={23} />
+                    </span>
+                    <span className="simulation-option-content">
+                      <strong>{opt.title}</strong>
+                      <small>{opt.description}</small>
+                    </span>
+                    <ArrowRight
+                      size={18}
+                      className="simulation-option-arrow"
+                    />
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

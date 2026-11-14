@@ -105,3 +105,34 @@ export const runSweep = (body: unknown) =>
 
 export const runMultilayerAnalysis = (body: unknown) =>
   request("/multilayer/analysis", { method: "POST", body: JSON.stringify(body) });
+
+// ---------------------------------------------------------
+// PAGE 7 — PDF REPORT
+// ---------------------------------------------------------
+export interface ReportRequest {
+  single?: unknown;
+  stack?: unknown;
+  stack_analysis?: unknown;
+  sweep?: unknown;
+  label?: string;
+  include_sensitivity?: boolean;
+}
+
+export async function generateReport(body: ReportRequest): Promise<Blob> {
+  const res = await fetch(`${API_BASE_URL}/report`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const j = await res.json().catch(() => ({} as any));
+    const detail =
+      Array.isArray(j?.detail)
+        ? j.detail
+            .map((d: any) => `${(d.loc || []).slice(1).join(".")}: ${d.msg}`)
+            .join("; ")
+        : j?.detail || `Report request failed: ${res.status}`;
+    throw new Error(detail);
+  }
+  return res.blob();
+}

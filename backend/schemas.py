@@ -246,3 +246,38 @@ class ResultFilter(BaseModel):
 
 class FilterRequest(ResultFilter):
     run_id: str
+
+# =========================================================
+# PAGE 7 — REPORT SCHEMAS
+# =========================================================
+
+class ReportRequest(BaseModel):
+    """Payload for POST /api/report. The backend recomputes from `sweep`."""
+    source: Literal["sweep"] = "sweep"
+    sweep: SweepRequest
+    label: str = Field(default="Frequency sweep", max_length=200)
+    include_sensitivity: bool = True
+
+    # =========================================================
+# PAGE 7 — REPORT SCHEMAS
+# =========================================================
+
+class ReportRequest(BaseModel):
+    """Payload for POST /api/report.
+
+    Each field is optional; whatever is provided gets appended to the single
+    PDF. Page 7 assembles this from the "Generate Report" buttons on Pages 3, 4
+    and 5.
+    """
+    single: SingleLayerRequest | None = None
+    stack: MultilayerRequest | None = None
+    stack_analysis: MultilayerAnalysisRequest | None = None
+    sweep: SweepRequest | None = None
+    label: str = Field(default="EM-Shield report", max_length=200)
+    include_sensitivity: bool = True
+
+    @model_validator(mode="after")
+    def at_least_one(self):
+        if not any((self.single, self.stack, self.sweep)):
+            raise ValueError("Provide at least one of: single, stack, sweep")
+        return self

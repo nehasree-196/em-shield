@@ -185,7 +185,6 @@ export default function Optimization() {
     <div className="dashboard">
       <header className="dashboard-heading">
         <div>
-          <p className="eyebrow">PAGE 6</p>
           <h2>Material Optimization</h2>
           <p>
             Find the thinnest (or lightest) multilayer stack that reaches a target

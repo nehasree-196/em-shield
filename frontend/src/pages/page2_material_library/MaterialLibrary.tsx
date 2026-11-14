@@ -2,7 +2,6 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
-  Atom,
   Layers3,
   Boxes,
   Gauge,
@@ -15,13 +14,10 @@ function formatProperty(value: number | null | undefined): string {
   return value == null ? "—" : value.toLocaleString();
 }
 
-const SIMULATION_OPTIONS = [
-  {
-    title: "Manage Materials",
-    description: "Add custom materials or inspect the material library.",
-    path: "/materials",
-    icon: Atom,
-  },
+// Entries used by the "Next →" destination-choice popup.
+// Only simulation destinations belong here — "Manage Materials" is not a
+// destination, it's the entry point, so it's excluded.
+const DESTINATION_OPTIONS = [
   {
     title: "Single-Layer Simulation",
     description: "Analyse one material layer.",
@@ -265,7 +261,7 @@ export default function MaterialLibrary() {
           lineHeight: "1.4",
         }}
       >
-        Material properties sourced from <strong>Ansys HFSS</strong> material library.
+        Material properties sourced from <strong>Ansys HFSS</strong> material library. All simulations are done assuming properties of materials as frequency-independent.
       </p>
 
       {showCustomForm && (
@@ -655,7 +651,7 @@ export default function MaterialLibrary() {
             </div>
 
             <div className="simulation-modal-options">
-              {SIMULATION_OPTIONS.map((opt) => {
+              {DESTINATION_OPTIONS.map((opt) => {
                 const Icon = opt.icon;
                 return (
                   <button

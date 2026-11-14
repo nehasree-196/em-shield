@@ -213,6 +213,20 @@ export default function MaterialLibrary() {
           {showCustomForm ? "Close Form" : "+ Add Custom Material"}
         </button>
       </div>
+      
+      <p
+        style={{
+          fontSize: "0.85rem",
+          color: "#64748b",
+          marginTop: "-8px",
+          marginBottom: "24px",
+          borderLeft: "3px solid #5b3df5",
+          paddingLeft: "12px",
+          lineHeight: "1.4",
+        }}
+      >
+        Material properties sourced from <strong>Ansys HFSS</strong> material library.
+      </p>
 
       {showCustomForm && (
         <form
@@ -375,7 +389,20 @@ export default function MaterialLibrary() {
           const isSession = sessionIds.has(material.id);
 
           return (
-            <div key={material.id} className="workspace-card">
+            <div
+              key={material.id}
+              className="workspace-card"
+              onClick={() => toggleExpanded(material.id)}
+              style={{ 
+                cursor: "pointer", 
+                transition: "all 0.2s ease",
+                position: "relative",
+                // Elevate the active card so the dropdown sits perfectly on top
+                zIndex: isExpanded ? 50 : 1,
+                borderColor: isExpanded ? "#5b3df5" : undefined,
+                boxShadow: isExpanded ? "0 8px 24px rgba(91, 61, 245, 0.15)" : undefined,
+              }}
+            >
               <div
                 style={{
                   display: "flex",
@@ -386,7 +413,6 @@ export default function MaterialLibrary() {
               >
                 <button
                   type="button"
-                  onClick={() => toggleExpanded(material.id)}
                   aria-expanded={isExpanded}
                   style={{
                     border: "none",
@@ -396,16 +422,24 @@ export default function MaterialLibrary() {
                     fontSize: "1.25rem",
                     fontWeight: 600,
                     textAlign: "left",
-                    color: "inherit",
+                    color: isExpanded ? "#5b3df5" : "inherit",
                   }}
                 >
-                  {material.name} {isExpanded ? "▲" : "▼"}
+                  {material.name} <span style={{ 
+                    display: "inline-block",
+                    transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", 
+                    transition: "transform 0.3s ease",
+                    fontSize: "0.8rem"
+                  }}>▼</span>
                 </button>
 
                 {isSession && (
                   <button
                     type="button"
-                    onClick={() => removeSessionMaterial(material.id)}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevents the dropdown from opening
+                      removeSessionMaterial(material.id);
+                    }}
                     title="Remove this session material"
                     style={{
                       border: "none",
@@ -436,33 +470,48 @@ export default function MaterialLibrary() {
                 )}
               </p>
 
+              {/* FLOATING DROPDOWN PANEL */}
               {isExpanded && (
-                <div>
-                  <h3>Electromagnetic Properties</h3>
-                  <p>
-                    Conductivity:{" "}
-                    {formatProperty(material.properties.conductivity_s_m)} S/m
-                  </p>
-                  <p>
-                    Relative Permittivity:{" "}
-                    {formatProperty(material.properties.relative_permittivity)}
-                  </p>
-                  <p>
-                    Relative Permeability:{" "}
-                    {formatProperty(material.properties.relative_permeability)}
-                  </p>
-                  <p>
-                    Dielectric Loss Tangent:{" "}
-                    {formatProperty(material.properties.dielectric_loss_tangent)}
-                  </p>
-                  <p>
-                    Magnetic Loss Tangent:{" "}
-                    {formatProperty(material.properties.magnetic_loss_tangent)}
-                  </p>
-                  <p>
-                    Mass Density:{" "}
-                    {formatProperty(material.properties.mass_density)}
-                  </p>
+                <div
+                  onClick={(e) => e.stopPropagation()} // Stop clicks from closing the dropdown
+                  style={{
+                    position: "absolute",
+                    top: "calc(100% - 10px)", // Drops down just below the card
+                    left: "-1px",
+                    right: "-1px",
+                    backgroundColor: "#ffffff",
+                    borderRadius: "0 0 12px 12px",
+                    border: "1px solid #5b3df5",
+                    borderTop: "none",
+                    padding: "20px",
+                    boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
+                    animation: "fadeInDown 0.2s ease-out forwards",
+                  }}
+                >
+                  <h3 style={{ fontSize: "0.95rem", marginBottom: "16px", color: "#1e293b", display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#5b3df5" }}></span>
+                    Electromagnetic Properties
+                  </h3>
+                  
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                    {[
+                      { label: "Conductivity", value: material.properties.conductivity_s_m, unit: "S/m" },
+                      { label: "Rel. Permittivity", value: material.properties.relative_permittivity, unit: "" },
+                      { label: "Rel. Permeability", value: material.properties.relative_permeability, unit: "" },
+                      { label: "Dielectric Loss", value: material.properties.dielectric_loss_tangent, unit: "" },
+                      { label: "Magnetic Loss", value: material.properties.magnetic_loss_tangent, unit: "" },
+                      { label: "Mass Density", value: material.properties.mass_density, unit: "kg/m³" },
+                    ].map((prop, idx) => (
+                      <div key={idx} style={{ display: "flex", flexDirection: "column", padding: "10px", background: "#f8fafc", borderRadius: "8px" }}>
+                        <span style={{ color: "#64748b", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "4px" }}>
+                          {prop.label}
+                        </span>
+                        <span style={{ fontWeight: 600, color: "#0f172a", fontSize: "0.95rem" }}>
+                          {formatProperty(prop.value)} <span style={{ fontSize: "0.8em", color: "#64748b", fontWeight: "normal" }}>{prop.unit}</span>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

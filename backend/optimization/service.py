@@ -101,7 +101,7 @@ def run_optimization(req):
         if req.max_mass_kg_m2:
             mass = search.mass_cost(stack)
             if mass > req.max_mass_kg_m2:
-                v += 100.0 * (mass / req.max_mass_kg_m2 - 1.0)
+                v += 100.0 * (mass / req.max_mass_kg_m2 )
         return v
 
     p = Problem(search.worst_se, ids, req.target_se_db + req.safety_margin_db, limits=limits,

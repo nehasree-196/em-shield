@@ -4,7 +4,7 @@
         "name": "Aluminium",
         "category": "Conductor",
         "properties": {
-            "conductivity_s_m": 58000000,
+            "conductivity_s_m": 38000000,
             "relative_permittivity": 1,
             "relative_permeability": 1.000021,
             "dielectric_loss_tangent": 0,

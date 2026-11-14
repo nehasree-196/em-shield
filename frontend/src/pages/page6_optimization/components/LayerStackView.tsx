@@ -5,6 +5,16 @@ type Props = {
   layers: CandidateLayer[];
 };
 
+// First two letters of the material name, uppercased.
+// Falls back to the material id if the name is missing/empty.
+function shortLabel(layer: CandidateLayer): string {
+  const source =
+    (layer.material_name && layer.material_name.trim()) ||
+    layer.material_id ||
+    "";
+  return source.trim().slice(0, 2).toUpperCase();
+}
+
 export function LayerStackView({ layers }: Props) {
   const total = layers.reduce((s, l) => s + l.thickness_m, 0) || 1;
   const title = layers
@@ -16,12 +26,12 @@ export function LayerStackView({ layers }: Props) {
       {layers.map((l, i) => {
         const isFirst = i === 0;
         const isLast = i === layers.length - 1;
-        const radius = layers.length === 1 
-          ? "6px" 
-          : isFirst 
-            ? "6px 0 0 6px" 
-            : isLast 
-              ? "0 6px 6px 0" 
+        const radius = layers.length === 1
+          ? "6px"
+          : isFirst
+            ? "6px 0 0 6px"
+            : isLast
+              ? "0 6px 6px 0"
               : "0";
 
         return (
@@ -34,7 +44,7 @@ export function LayerStackView({ layers }: Props) {
               borderRight: isLast ? "none" : "1px solid rgba(0,0,0,0.1)",
             }}
           >
-            {layers.length <= 3 ? l.material_id.slice(0, 2).toUpperCase() : ""}
+            {layers.length <= 3 ? shortLabel(l) : ""}
           </div>
         );
       })}

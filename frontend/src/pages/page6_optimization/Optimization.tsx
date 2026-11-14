@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { PlayCircle } from "lucide-react";
 
-import { runOptimization } from "./api";
+import { runOptimization, filterRun } from "./api";
 import type { Material, OptimizationRequest, RunResult } from "./types";
 import { MaterialPicker } from "./components/MaterialPicker";
 import { ConditionsForm } from "./components/ConditionsForm";
@@ -26,9 +26,9 @@ const DEFAULTS: OptimizationRequest = {
   safety_margin_db: 1.0,
 };
 
+const ALL_CANDIDATES_LIMIT = 2000;
+
 export default function Optimization() {
-  // Single source of truth: the shared context, which is the union of the
-  // backend library and any session-only customs stored in sessionStorage.
   const workspace = useWorkspace();
   const library: Material[] = Array.isArray(workspace?.materials)
     ? workspace.materials
@@ -46,13 +46,17 @@ export default function Optimization() {
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [showAllCandidates, setShowAllCandidates] = useState(false);
+  const [loadingAll, setLoadingAll] = useState(false);
 
-  // No local fetchMaterials() anymore — the context already loads the library
-  // and merges in session customs.
+  // Only ever keep candidates that passed dense validation.
+  const validCandidates = useMemo(
+    () => (result?.candidates ?? []).filter((c) => c.passes_dense_validation),
+    [result]
+  );
 
   const selected = useMemo(
-    () => result?.candidates.find((c) => c.rank === selectedRank) ?? null,
-    [result, selectedRank]
+    () => validCandidates.find((c) => c.rank === selectedRank) ?? null,
+    [validCandidates, selectedRank]
   );
 
   const validateRequest = (): string | null => {
@@ -115,7 +119,9 @@ export default function Optimization() {
     try {
       const r = await runOptimization(req);
       setResult(r);
-      setSelectedRank(r.candidates[0]?.rank ?? null);
+      // Select the first VALID candidate, not just the first.
+      const firstValid = r.candidates.find((c) => c.passes_dense_validation);
+      setSelectedRank(firstValid?.rank ?? null);
     } catch (e) {
       setError(String(e));
     } finally {
@@ -125,11 +131,55 @@ export default function Optimization() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [req]);
 
+  // Fetch the full candidate pool (up to 2000) from the backend on demand.
+  const loadAllCandidates = useCallback(async () => {
+    if (!result) return;
+    setLoadingAll(true);
+    setError(null);
+    try {
+      const res = await filterRun({
+        run_id: result.run_id,
+        include_ids: [],
+        exclude_ids: [],
+        sort_by: "objective",
+        only_validated: true,
+        top_k: ALL_CANDIDATES_LIMIT,
+      });
+      setResult({ ...result, candidates: res.candidates, distinct_candidates_found: res.candidates.length });
+      const firstValid = res.candidates.find((c) => c.passes_dense_validation);
+      setSelectedRank(firstValid?.rank ?? null);
+      setShowAllCandidates(true);
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setLoadingAll(false);
+    }
+  }, [result]);
+
+  const toggleViewAll = useCallback(() => {
+    if (showAllCandidates) {
+      setShowAllCandidates(false);
+      return;
+    }
+    if (validCandidates.length > (req.top_k || 10)) {
+      setShowAllCandidates(true);
+    } else {
+      void loadAllCandidates();
+    }
+  }, [showAllCandidates, validCandidates.length, req.top_k, loadAllCandidates]);
+
   const displayedCandidates = useMemo(() => {
-    if (!result) return [];
-    if (showAllCandidates) return result.candidates;
-    return result.candidates.slice(0, req.top_k || 10);
-  }, [result, showAllCandidates, req.top_k]);
+    if (showAllCandidates) return validCandidates;
+    return validCandidates.slice(0, req.top_k || 10);
+  }, [validCandidates, showAllCandidates, req.top_k]);
+
+  // The button is available right after the first run, since the full pool
+  // (up to 2000) can be fetched on demand even if the initial run returned
+  // only top_k.
+  const canViewMore =
+    !!result &&
+    validCandidates.length > 0 &&
+    (validCandidates.length > (req.top_k || 10) || !showAllCandidates);
 
   return (
     <div className="dashboard">
@@ -179,7 +229,7 @@ export default function Optimization() {
             </div>
             <ConditionsForm value={req} onChange={setReq} />
 
-            {result && (
+            {result && validCandidates.length > 0 && (
               <>
                 <div className="section-heading" style={{ marginTop: 22 }}>
                   <h3>Filter results</h3>
@@ -189,7 +239,8 @@ export default function Optimization() {
                   availableMaterials={req.materials}
                   onFiltered={(candidates) => {
                     setResult({ ...result, candidates, distinct_candidates_found: candidates.length });
-                    setSelectedRank(candidates[0]?.rank ?? null);
+                    const firstValid = candidates.find((c) => c.passes_dense_validation);
+                    setSelectedRank(firstValid?.rank ?? null);
                     setShowAllCandidates(false);
                   }}
                 />
@@ -206,29 +257,45 @@ export default function Optimization() {
               </p>
             )}
 
-            {result && (
+            {result && validCandidates.length === 0 && (
+              <div className="opt-banner is-error">
+                ⚠️ No valid combinations were found for the current conditions.
+                Try lowering the target SE, widening the frequency band, increasing
+                max layers/thickness, or adjusting the safety margin.
+              </div>
+            )}
+
+            {result && validCandidates.length > 0 && (
               <>
                 <div className="opt-banner">{result.message}</div>
                 <p className="opt-meta">
                   {result.solver_evaluations} solver evaluations · {result.runtime_s} s ·
                   search grid {result.search_grid.frequencies}×{result.search_grid.angles} ·
                   validation grid {result.validation_grid.frequencies}×
-                  {result.validation_grid.angles}
+                  {result.validation_grid.angles} · {validCandidates.length} valid candidate
+                  {validCandidates.length === 1 ? "" : "s"}
                 </p>
 
                 {selected && (
-                  <div style={{ position: "sticky", top: 0, zIndex: 10 }}>
-                    <div style={{
+                  <div
+                    style={{
+                      position: "sticky",
+                      top: 0,
+                      zIndex: 10,
+                      // Cap the pinned card so the table below always has room.
+                      maxHeight: "38vh",
+                      overflowY: "auto",
+                      marginBottom: 12,
+                      borderRadius: "14px",
                       background: "rgba(237, 240, 255, 0.95)",
                       backdropFilter: "blur(12px)",
                       WebkitBackdropFilter: "blur(12px)",
-                      borderRadius: "14px",
                       boxShadow: "0 8px 32px rgba(104, 65, 232, 0.15)",
                       border: "1px solid rgba(192, 202, 255, 0.5)",
-                      overflow: "hidden",
-                      marginBottom: "16px"
-                    }}>
-                      <CandidateDetail candidate={selected} target={result.target_se_db} />
+                    }}
+                  >
+                    <div className="opt-detail-pinned">
+                      <CandidateDetail candidate={selected} target={result.target_se_db} compact />
                     </div>
                   </div>
                 )}
@@ -247,15 +314,19 @@ export default function Optimization() {
                   />
                 </div>
 
-                {result.candidates.length > (req.top_k || 10) && (
+                {/* Bottom "view all" button — visible right after the first run. */}
+                {canViewMore && (
                   <div style={{ textAlign: "center", marginTop: 16 }}>
                     <button
                       className="secondary-button"
-                      onClick={() => setShowAllCandidates(!showAllCandidates)}
+                      onClick={toggleViewAll}
+                      disabled={loadingAll}
                     >
-                      {showAllCandidates
-                        ? `Show top ${req.top_k || 10} only`
-                        : `View all ${result.candidates.length} candidates`}
+                      {loadingAll
+                        ? "Loading all candidates…"
+                        : showAllCandidates
+                          ? `Show top ${req.top_k || 10} only`
+                          : `View all candidates (up to ${ALL_CANDIDATES_LIMIT})`}
                     </button>
                   </div>
                 )}

@@ -4,7 +4,6 @@ import { NavLink } from "react-router-dom";                         //creates th
 import {
   Activity,
   Atom,
-  BarChart3,
   Boxes,
   FileCheck2,
   Gauge,
@@ -51,10 +50,10 @@ const navigation = [
     description: "Frequency response",
   },
   {
-    label: "Optimization",
+    label: "Material Optimization",
     path: "/optimization",
     icon: Gauge,
-    description: "Thickness optimization",
+    description: "Thickness & mass optimization",
   },
   {
     label: "Results & Export",
@@ -105,17 +104,6 @@ export default function Sidebar() {
           </NavLink>
         ))}
       </nav>
-
-      <div className="sidebar-bottom">
-        <div className="sidebar-info-icon">
-          <BarChart3 size={19} />
-        </div>
-
-        <div>
-          <strong>Project status</strong>
-          <p>Initial development</p>
-        </div>
-      </div>
     </aside>
   );
 }

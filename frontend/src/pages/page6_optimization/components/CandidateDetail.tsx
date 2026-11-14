@@ -4,15 +4,16 @@ import { LayerStackView } from "./LayerStackView";
 type Props = {
   candidate: Candidate;
   target: number;
+  compact?: boolean;
 };
 
-export function CandidateDetail({ candidate, target }: Props) {
+export function CandidateDetail({ candidate, target, compact = false }: Props) {
   const c = candidate;
   return (
     <div className="opt-detail">
       <h4>Rank {c.rank} — {c.layer_count} layer{c.layer_count === 1 ? "" : "s"}</h4>
-      
-      <div style={{ marginBottom: 20, padding: "4px 0" }}>
+
+      <div style={{ marginBottom: compact ? 10 : 20, padding: compact ? 0 : "4px 0" }}>
         <LayerStackView layers={c.layers} />
       </div>
 
@@ -49,22 +50,24 @@ export function CandidateDetail({ candidate, target }: Props) {
         </div>
       </div>
 
-      <div style={{ marginTop: 20 }}>
-        <span style={{ color: "var(--muted)", fontSize: "10px", fontWeight: 700, letterSpacing: "1.2px", textTransform: "uppercase" }}>
-          Layer breakdown
-        </span>
-        <ol style={{ margin: "8px 0 0 0", paddingLeft: "20px", fontSize: "12px", color: "var(--deep-purple)", lineHeight: 1.6 }}>
-          {c.layers.map((l) => (
-            <li key={l.order}>
-              <strong>{l.material_name}</strong> — {(l.thickness_m * 1e3).toFixed(3)} mm
-            </li>
-          ))}
-        </ol>
-      </div>
+      {!compact && (
+        <div style={{ marginTop: 20 }}>
+          <span style={{ color: "var(--muted)", fontSize: "10px", fontWeight: 700, letterSpacing: "1.2px", textTransform: "uppercase" }}>
+            Layer breakdown
+          </span>
+          <ol style={{ margin: "8px 0 0 0", paddingLeft: "20px", fontSize: "12px", color: "var(--deep-purple)", lineHeight: 1.6 }}>
+            {c.layers.map((l) => (
+              <li key={l.order}>
+                <strong>{l.material_name}</strong> — {(l.thickness_m * 1e3).toFixed(3)} mm
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
 
       {c.warnings.length > 0 && (
         <>
-          <h4 style={{ marginTop: 20 }}>Warnings</h4>
+          <h4 style={{ marginTop: compact ? 12 : 20 }}>Warnings</h4>
           <ul className="opt-warnings">
             {c.warnings.map((w, i) => (
               <li key={i}>{w}</li>

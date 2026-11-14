@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 
 import {
   ArrowRight,
+  Atom,
   Layers3,
   Boxes,
   Gauge,
   X,
   PlayCircle,
+  Users,
 } from "lucide-react";
 
 const workspaces = [
@@ -33,23 +35,41 @@ const workspaces = [
 
 const simulationModes = [
   {
+    title: "Manage Materials",
+    description: "Add custom materials or inspect the material library.",
+    mode: "materials",
+    path: "/materials",
+    icon: Atom,
+  },
+  {
     title: "Single-Layer Simulation",
     description: "Analyse one material layer.",
     mode: "single-layer",
+    path: "/single-layer",
     icon: Layers3,
   },
   {
     title: "Multilayer Simulation",
     description: "Design a stack of material layers.",
     mode: "multilayer",
+    path: "/multilayer",
     icon: Boxes,
   },
   {
     title: "Material Optimization",
     description: "Find an optimized material configuration.",
     mode: "optimization",
+    path: "/optimization",
     icon: Gauge,
   },
+];
+
+const groupMembers = [
+  { name: "Pragya Patni", roll: "2401EE15", leader: true },
+  { name: "Kodavath Yuvaraj Naik", roll: "2401EE12", leader: false },
+  { name: "Neha Sree Kuppam", roll: "2402PC02", leader: false },
+  { name: "Nimmagadda Kumuda Hasini", roll: "2401EE13", leader: false },
+  { name: "Prabhudeva Indurupati", roll: "2401EE27", leader: false },
 ];
 
 export default function Dashboard() {
@@ -57,10 +77,9 @@ export default function Dashboard() {
 
   const [showPopup, setShowPopup] = useState(false);
 
-  const handleSimulationSelection = (mode: string) => {
+  const handleSimulationSelection = (path: string) => {
     setShowPopup(false);
-    // Send all modes to the materials page first
-    navigate(`/materials?mode=${mode}`);
+    navigate(path);
   };
 
   return (
@@ -127,6 +146,41 @@ export default function Dashboard() {
         </div>
       </section>
 
+      {/* Group Details */}
+      <section aria-labelledby="group-heading">
+        <div className="section-heading">
+          <h3 id="group-heading">
+            Group Details
+          </h3>
+
+          <span>Project team</span>
+        </div>
+
+        <div className="group-card">
+          <div className="group-card-header">
+            <span className="workspace-icon">
+              <Users size={22} />
+            </span>
+
+            <h4>EM-Shield Project Team</h4>
+          </div>
+
+          <ul className="group-member-list">
+            {groupMembers.map((member) => (
+              <li key={member.roll} className="group-member">
+                <span className="group-member-info">
+                  <strong>
+                    {member.name}
+                    {member.leader && " (Leader)"}
+                  </strong>
+                  <span className="group-member-roll">{member.roll}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       {/* Simulation Selection Popup */}
       {showPopup && (
         <div
@@ -172,7 +226,7 @@ export default function Dashboard() {
                     key={simulation.mode}
                     className="simulation-modal-option"
                     onClick={() =>
-                      handleSimulationSelection(simulation.mode)
+                      handleSimulationSelection(simulation.path)
                     }
                   >
                     <span className="simulation-option-icon">

@@ -30,7 +30,6 @@ export function CandidateTable({
           </th>
           <th style={{ width: "100px" }}>Worst SE dB</th>
           <th style={{ width: "80px" }}>Margin</th>
-          <th style={{ width: "70px", textAlign: "center" }}>Valid</th>
         </tr>
       </thead>
       <tbody>
@@ -39,12 +38,7 @@ export function CandidateTable({
           return (
             <tr
               key={c.rank}
-              className={[
-                selected ? "is-selected" : "",
-                !c.passes_dense_validation ? "is-invalid" : "",
-              ]
-                .filter(Boolean)
-                .join(" ")}
+              className={selected ? "is-selected" : ""}
               onClick={() => onSelect(c.rank)}
             >
               <td style={{ textAlign: "center" }}>{c.rank}</td>
@@ -59,11 +53,6 @@ export function CandidateTable({
               </td>
               <td>{c.worst_case_se_db.toFixed(2)}</td>
               <td>{c.margin_db.toFixed(2)}</td>
-              <td style={{ textAlign: "center" }}>
-                <span className={`opt-tag ${c.passes_dense_validation ? "is-valid" : "is-invalid"}`}>
-                  {c.passes_dense_validation ? "YES" : "NO"}
-                </span>
-              </td>
             </tr>
           );
         })}

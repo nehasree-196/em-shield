@@ -11,6 +11,14 @@ const LEN_UNITS = { m: 1, mm: 1e-3, "µm": 1e-6, nm: 1e-9 };
 
 const toStr = (num: number | undefined) => (num === undefined ? "" : num.toString());
 
+// Clamp a parsed numeric input to >= 0. Returns undefined for empty/invalid.
+const clampNonNegative = (val: string): number | undefined => {
+  if (val === "") return undefined;
+  const num = parseFloat(val);
+  if (isNaN(num)) return undefined;
+  return num < 0 ? 0 : num;
+};
+
 export function ConditionsForm({ value, onChange }: Props) {
   const [fminUnit, setFminUnit] = useState<keyof typeof FREQ_UNITS>("Hz");
   const [fmaxUnit, setFmaxUnit] = useState<keyof typeof FREQ_UNITS>("Hz");
@@ -23,38 +31,28 @@ export function ConditionsForm({ value, onChange }: Props) {
   const [minLenVal, setMinLenVal] = useState(toStr(value.default_min_layer_thickness_m));
   const [maxLenVal, setMaxLenVal] = useState(toStr(value.default_max_layer_thickness_m));
 
-  const set = <K extends keyof OptimizationRequest>(key: K, v: OptimizationRequest[K]) => 
+  const set = <K extends keyof OptimizationRequest>(key: K, v: OptimizationRequest[K]) =>
     onChange({ ...value, [key]: v });
 
   const handleTarget = (val: string) => {
     setTargetVal(val);
-    if (val === "") set("target_se_db", undefined);
-    else {
-      const num = parseFloat(val);
-      if (!isNaN(num)) set("target_se_db", num);
-    }
+    set("target_se_db", clampNonNegative(val));
   };
 
   const handleFreq = (field: "frequency_min_hz" | "frequency_max_hz", val: string, unit: number) => {
     if (field === "frequency_min_hz") setFminVal(val);
     else setFmaxVal(val);
-    
-    if (val === "") set(field, undefined);
-    else {
-      const num = parseFloat(val);
-      if (!isNaN(num)) set(field, num * unit);
-    }
+
+    const clamped = clampNonNegative(val);
+    set(field, clamped === undefined ? undefined : clamped * unit);
   };
 
   const handleLen = (field: "default_min_layer_thickness_m" | "default_max_layer_thickness_m", val: string, unit: number) => {
     if (field === "default_min_layer_thickness_m") setMinLenVal(val);
     else setMaxLenVal(val);
-    
-    if (val === "") set(field, undefined);
-    else {
-      const num = parseFloat(val);
-      if (!isNaN(num)) set(field, num * unit);
-    }
+
+    const clamped = clampNonNegative(val);
+    set(field, clamped === undefined ? undefined : clamped * unit);
   };
 
   const changeFminUnit = (newUnit: keyof typeof FREQ_UNITS) => {
@@ -82,7 +80,7 @@ export function ConditionsForm({ value, onChange }: Props) {
       <label className="opt-field">
         <span>Target SE (dB) *</span>
         <input
-          type="number" min={1} value={targetVal}
+          type="number" min={0} value={targetVal}
           onChange={(e) => handleTarget(e.target.value)}
         />
       </label>
@@ -92,7 +90,7 @@ export function ConditionsForm({ value, onChange }: Props) {
           <span>F min *</span>
           <div className="opt-input-unit">
             <input
-              type="number" value={fminVal}
+              type="number" min={0} value={fminVal}
               onChange={(e) => handleFreq("frequency_min_hz", e.target.value, FREQ_UNITS[fminUnit])}
             />
             <select value={fminUnit} onChange={(e) => changeFminUnit(e.target.value as any)}>
@@ -104,7 +102,7 @@ export function ConditionsForm({ value, onChange }: Props) {
           <span>F max *</span>
           <div className="opt-input-unit">
             <input
-              type="number" value={fmaxVal}
+              type="number" min={0} value={fmaxVal}
               onChange={(e) => handleFreq("frequency_max_hz", e.target.value, FREQ_UNITS[fmaxUnit])}
             />
             <select value={fmaxUnit} onChange={(e) => changeFmaxUnit(e.target.value as any)}>
@@ -119,7 +117,7 @@ export function ConditionsForm({ value, onChange }: Props) {
           <span>Min layer thick.</span>
           <div className="opt-input-unit">
             <input
-              type="number" value={minLenVal}
+              type="number" min={0} value={minLenVal}
               onChange={(e) => handleLen("default_min_layer_thickness_m", e.target.value, LEN_UNITS[minLenUnit])}
             />
             <select value={minLenUnit} onChange={(e) => changeMinLenUnit(e.target.value as any)}>
@@ -131,7 +129,7 @@ export function ConditionsForm({ value, onChange }: Props) {
           <span>Max layer thick.</span>
           <div className="opt-input-unit">
             <input
-              type="number" value={maxLenVal}
+              type="number" min={0} value={maxLenVal}
               onChange={(e) => handleLen("default_max_layer_thickness_m", e.target.value, LEN_UNITS[maxLenUnit])}
             />
             <select value={maxLenUnit} onChange={(e) => changeMaxLenUnit(e.target.value as any)}>

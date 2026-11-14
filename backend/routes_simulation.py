@@ -6,6 +6,7 @@ from multilayer import analyse, stack_response, sweep
 from schemas import MultilayerAnalysisRequest, MultilayerRequest, SingleLayerRequest, SweepRequest
 from simulation import (conductor_ratio, failing_ranges, single_layer, skin_depth,
                         skin_depth_good_conductor)
+
 router = APIRouter(prefix="/api")
 
 
@@ -16,11 +17,17 @@ def _num(x):
 
 
 def _resolve(layers):
-    try:
-        return [(*resolve_material(l.material)[:3], l.thickness_m) for l in layers], \
-               [resolve_material(l.material)[3] for l in layers]
-    except KeyError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+    """Resolve a list of layers, raising a 404 if any material is missing from the DB."""
+    stack = []
+    labels = []
+    for l in layers:
+        try:
+            s, e, m, label = resolve_material(l.material)
+            stack.append((s, e, m, l.thickness_m))
+            labels.append(label)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail=str(exc))
+    return stack, labels
 
 
 # @router.get("/materials")
@@ -57,6 +64,35 @@ def run_single_layer(req: SingleLayerRequest):
     }
 
 
+@router.post("/multilayer")
+def run_multilayer(req: MultilayerRequest):
+    """Fixed-frequency calculation for Page 4."""
+    stack, labels = _resolve(req.layers)
+    f = np.array([req.frequency_hz])
+    res = stack_response(f, stack)
+    
+    # Calculate skin depth for each layer to populate the table in the UI
+    stack_details = []
+    for i, ((s, e, m, d), label) in enumerate(zip(stack, labels)):
+        delta = skin_depth(f, s, e, m)[0]
+        stack_details.append({
+            "order": i + 1,
+            "material": label,
+            "thickness_m": d,
+            "skin_depth_m": _num(delta),
+        })
+
+    return {
+        "layer_count": len(stack),
+        "total_thickness_m": float(sum(l[3] for l in stack)),
+        "frequency_hz": req.frequency_hz,
+        "reflection_power": float(res["reflection_power"][0]),
+        "transmission_power": float(res["transmission_power"][0]),
+        "absorption_power": float(res["absorption_power"][0]),
+        "shielding_effectiveness_db": float(res["shielding_effectiveness_db"][0]),
+        "stack": stack_details,
+    }
+
 
 @router.post("/sweep")
 def run_sweep(req: SweepRequest):
@@ -70,6 +106,7 @@ def run_sweep(req: SweepRequest):
          failing_ranges(res["frequency_hz"], res["shielding_effectiveness_db"], req.target_se_db)]
         if req.target_se_db is not None else [])
     return out
+
 
 @router.post("/multilayer/analysis")
 def run_multilayer_analysis(req: MultilayerAnalysisRequest):

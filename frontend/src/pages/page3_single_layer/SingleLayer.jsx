@@ -183,7 +183,7 @@ export default function SingleLayer() {
               />
 
               <div className="em-next-step">
-                <button type="button" className="em-btn" onClick={() => navigate('/frequency-analysis')}>
+                <button type="button" className="em-btn" onClick={() => navigate('/frequency-analysis', { state: { source: 'single' } })}>
                   Analyse frequency response →
                 </button>
                 <p className="em-hint">Sweeps this {materialLabel(material, materials)} slab across a frequency band.</p>

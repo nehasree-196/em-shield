@@ -1,5 +1,6 @@
 // FrequencyAnalysis.jsx — Page 5: sweep the active single-layer design or stack across a band and flag SE below target.
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import ResultsChart from '../../components/ResultsChart';
 import { useWorkspace } from '../../context/WorkspaceContext';
 import { runSweep } from '../../services/api';
@@ -56,7 +57,10 @@ async function runSensitivity(layers, body, materials) {
 
 export default function FrequencyAnalysis() {
   const { activeSingle, activeStack, setLastSweep, materials = [] } = useWorkspace();
-  const [source, setSource] = useState('single');
+  const location = useLocation();
+  const [source, setSource] = useState(
+    location.state?.source ?? (!activeSingle && activeStack ? 'stack' : 'single')
+  );
   const [fStart, setFStart] = useState('1');
   const [fEnd, setFEnd] = useState('10');
   const [unit, setUnit] = useState('GHz');
@@ -106,8 +110,8 @@ export default function FrequencyAnalysis() {
           <h2>Sweep settings</h2>
           <label>Design source
             <select className="em-input" value={source} onChange={(e) => { setSource(e.target.value); setResult(null); setSens(null); }}>
-              <option value="single">Single-layer slab (Page 3)</option>
-              <option value="stack">Multilayer stack (Page 4)</option>
+              <option value="single">Single-layer slab </option>
+              <option value="stack">Multilayer stack </option>
             </select>
           </label>
           {design

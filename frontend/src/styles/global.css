@@ -1249,3 +1249,13 @@ textarea:focus-visible {
 
 /* Remove the now-unneeded hide rule, since the compact mode renders inline
    chips instead of the <ol>. (If the rule was added, delete it.) */
+   @keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileDown } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import ResultsChart from '../../components/ResultsChart';
 import { useWorkspace } from '../../context/WorkspaceContext';
 import { runSweep } from '../../services/api';
@@ -57,7 +58,10 @@ async function runSensitivity(layers, body, materials) {
 export default function FrequencyAnalysis() {
   const { activeSingle, activeStack, setLastSweep, stageForReport, materials = [] } = useWorkspace();
   const navigate = useNavigate();
-  const [source, setSource] = useState('single');
+  const location = useLocation();
+  const [source, setSource] = useState(
+    location.state?.source ?? (!activeSingle && activeStack ? 'stack' : 'single')
+  );
   const [fStart, setFStart] = useState('1');
   const [fEnd, setFEnd] = useState('10');
   const [unit, setUnit] = useState('GHz');

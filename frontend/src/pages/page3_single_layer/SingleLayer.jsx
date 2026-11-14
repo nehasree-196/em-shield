@@ -204,6 +204,7 @@ export default function SingleLayer() {
                   className="em-btn"
                   onClick={() => navigate('/frequency-analysis')}
                 >
+                <button type="button" className="em-btn" onClick={() => navigate('/frequency-analysis', { state: { source: 'single' } })}>
                   Analyse frequency response →
                 </button>
                 <button

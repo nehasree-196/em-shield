@@ -1,6 +1,13 @@
 ﻿|-- .github
 |   |-- workflows
 |   |   |-- README.md
+|-- .pytest_cache
+|   |-- v
+|   |   |-- cache
+|   |   |   |-- nodeids
+|   |-- .gitignore
+|   |-- CACHEDIR.TAG
+|   |-- README.md
 |-- backend
 |   |-- .pytest_cache
 |   |   |-- v
@@ -101,22 +108,14 @@
 |   |   |   |-- units.js
 |   |   |-- App.tsx
 |   |   |-- main.tsx
-|   |-- FrequencyAnalysis.jsx
 |   |-- index.html
-|   |-- LayerEditor.jsx
-|   |-- MaterialSelect.jsx
-|   |-- Multilayer.jsx
 |   |-- package.json
 |   |-- package-lock.json
 |   |-- README.md
-|   |-- ResultCards.jsx
-|   |-- ResultsChart.jsx
-|   |-- SingleLayer.jsx
 |   |-- tsconfig.app.json
 |   |-- tsconfig.json
 |   |-- tsconfig.node.json
 |   |-- vite.config.ts
-|   |-- WorkspaceContext.jsx
 |-- tests
 |   |-- conftest.py
 |   |-- README.md
@@ -124,6 +123,7 @@
 |   |-- test_simulation.py
 |-- .gitignore
 |-- DO_THIS_BEFORE_PUSHING
+|-- oblique_backup.patch
 |-- package-lock.json
 |-- project-structure.txt
 |-- README.md

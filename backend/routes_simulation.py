@@ -2,7 +2,7 @@
 import numpy as np
 from fastapi import APIRouter, HTTPException
 from materials import list_materials, resolve_material
-from multilayer import analyse, stack_response, sweep
+from multilayer import analyse, multilayer_details, stack_response, sweep
 from schemas import MultilayerAnalysisRequest, MultilayerRequest, SingleLayerRequest, SweepRequest
 from simulation import (conductor_ratio, failing_ranges, single_layer, skin_depth,
                         skin_depth_good_conductor)
@@ -113,3 +113,8 @@ def run_multilayer_analysis(req: MultilayerAnalysisRequest):
     stack, labels = _resolve(req.layers)
     return analyse(stack, labels, req.frequency_start_hz, req.frequency_end_hz, req.frequency_points,
                    req.spacing, req.target_se_db, req.frequency_hz)
+    
+@router.post("/multilayer/details")
+def run_multilayer_details(req: MultilayerRequest):
+    stack, labels = _resolve(req.layers)
+    return multilayer_details(stack, labels, req.frequency_hz)    

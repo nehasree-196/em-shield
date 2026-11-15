@@ -213,6 +213,7 @@ def export_report_pdf(*,
                       label: str = "EM-Shield report",
                       single: dict | None = None,
                       stack: dict | None = None,
+                      stack_details: dict | None = None,
                       analysis: dict | None = None,
                       sweep: dict | None = None,
                       sweep_sensitivity: dict | None = None,
@@ -363,6 +364,48 @@ def export_report_pdf(*,
             layer_rows,
             col_widths=(18 * mm, 60 * mm, 42 * mm, 42 * mm),
         ))
+                # --- NEW: Field Profile and Sensitivity Charts ---
+        if stack_details is not None:
+            story.append(Spacer(1, 10))
+            story.append(Paragraph("Field and tolerance analysis", ss["H2"]))
+            
+            fp = stack_details["field_profile"]
+            sens = stack_details["sensitivity"]
+            
+            # 1. Field Chart
+            fig_field, ax_f = plt.subplots(figsize=(7.2, 3.0))
+            z_mm = [z * 1e3 for z in fp["depth_m"]]
+            ax_f.plot(z_mm, fp["relative_amplitude_db"], color=MPL[0], linewidth=2)
+            _style_axes(ax_f, "Relative field amplitude vs depth", "Depth (mm)", "Relative field (dB)")
+            
+            # Add shading for the layers
+            for i, l in enumerate(fp["layers"]):
+                ax_f.axvspan(l["start_m"]*1e3, l["end_m"]*1e3, color="#e2e7ff", alpha=0.3, label=f"L{l['order']} {l['material']}" if i < 5 else "")
+            ax_f.legend(fontsize=6, frameon=False, loc="lower left")
+            story.append(_fig_image(fig_field))
+            
+            # 2. Sensitivity Chart
+            if sens and sens.get("rows"):
+                labels = [r["label"] for r in sens["rows"]]
+                lo = [r["delta_minus_db"] for r in sens["rows"]]
+                hi = [r["delta_plus_db"] for r in sens["rows"]]
+                import numpy as _np
+                y = _np.arange(len(labels))
+                
+                fig_sens, ax_s = plt.subplots(figsize=(7.2, max(2.4, 0.36 * len(labels) + 1.0)))
+                ax_s.barh(y - 0.2, lo, height=0.4, color=MPL[1], label="−10%")
+                ax_s.barh(y + 0.2, hi, height=0.4, color=MPL[2], label="+10%")
+                ax_s.set_yticks(y)
+                ax_s.set_yticklabels(labels, fontsize=7)
+                ax_s.axvline(0, color="#444", linewidth=0.8)
+                _style_axes(ax_s, "Tolerance sensitivity (Change in SE)", "Δ SE (dB)", "")
+                ax_s.legend(fontsize=7, frameon=False, loc="lower right")
+                story.append(_fig_image(fig_sens))
+                
+                story.append(Paragraph(
+                    "Tolerance sensitivity shows how ±10% variations in thickness or conductivity affect the shielding effectiveness.",
+                    ss["Caption"],
+                ))
 
     # =========================================================
     # 3. MULTILAYER BAND ANALYSIS

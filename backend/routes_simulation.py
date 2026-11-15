@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException, Response
 
 from exports import export_report_pdf
 from materials import list_materials, resolve_material
-from multilayer import analyse, multilayer_details, stack_response, sweep
+from multilayer import (analyse, multilayer_details, stack_response, sweep)
 from schemas import (
     MultilayerAnalysisRequest, MultilayerRequest, ReportRequest,
     SingleLayerRequest, SweepRequest,
@@ -157,8 +157,9 @@ def generate_report(req: ReportRequest):
             "profile_relative_amplitude": np.exp(-alpha * z).tolist(),
         }
 
-    # ---- 2. Multilayer fixed-frequency ----
+        # ---- 2. Multilayer fixed-frequency ----
     stack_block = None
+    stack_details_block = None # NEW
     if req.stack is not None:
         stack, labels = _resolve(req.stack.layers)
         f = np.array([req.stack.frequency_hz])
@@ -180,6 +181,8 @@ def generate_report(req: ReportRequest):
             "shielding_effectiveness_db": float(res["shielding_effectiveness_db"][0]),
             "stack": stack_details,
         }
+        # NEW: Calculate the graphs for the PDF
+        stack_details_block = multilayer_details(stack, labels, req.stack.frequency_hz)
 
     # ---- 3. Multilayer band analysis ----
     analysis_block = None
@@ -217,6 +220,7 @@ def generate_report(req: ReportRequest):
         label=req.label,
         single=single_block,
         stack=stack_block,
+        stack_details=stack_details_block,
         analysis=analysis_block,
         sweep=sweep_block,
         sweep_sensitivity=sweep_sensitivity,

@@ -99,7 +99,6 @@ class SingleLayerInput(BaseModel):
 
 class MaterialSpec(BaseModel):
     material_id: Optional[str] = None
-
     sigma_s_per_m: Optional[float] = Field(
         default=None,
         ge=0,

@@ -77,7 +77,7 @@ export default function Multilayer() {
     }
   }
 
-  function generateReport() {
+    function generateReport() {
     if (!result) return;
     const apiLayers = buildApiLayers();
     stageForReport('stack', {
@@ -88,6 +88,8 @@ export default function Multilayer() {
         layers: apiLayers,
         frequency_hz: toSI(freq, freqUnit, FREQ_UNITS),
       },
+      // NEW: Pass the details so the PDF generator can draw the graphs
+      details: details, 
     });
     navigate('/results');
   }

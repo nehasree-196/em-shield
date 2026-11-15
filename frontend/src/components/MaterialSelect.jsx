@@ -29,6 +29,7 @@ export function toResolvableMaterialSpec(selected, sessionMaterials) {
   if (!selected || selected.mode !== 'library') {
     return { material_id: selected?.id };
   }
+  
   const list = Array.isArray(sessionMaterials) ? sessionMaterials : [];
   const session = list.find((m) => m.id === selected.id);
   if (session) {

@@ -1,21 +1,5 @@
-export type Material = {
-  id: string;
-  name?: string;
-  category?: string;
-  properties: {
-    conductivity_s_m: number;
-    relative_permittivity: number;
-    relative_permeability: number;
-    dielectric_loss_tangent?: number;
-    magnetic_loss_tangent?: number;
-    mass_density_kg_m3?: number;
-  };
-  min_thickness_m?: number;
-  max_thickness_m?: number;
-  reference_frequency_hz?: number;
-  frequency_dependent_properties?: unknown[];
-};
-
+import {Material} from "../../services/api";
+export type {Material};
 export type OptimizationRequest = {
   materials: Material[];
   target_se_db?: number;

@@ -2,10 +2,11 @@
 // Frequency sweeps / band analysis live on the Frequency Analysis page.
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { FileDown } from 'lucide-react';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js-basic-dist';
 import LayerEditor, { newLayer } from '../../components/LayerEditor';
-import { materialLabel, toMaterialSpec } from '../../components/MaterialSelect';
+import { materialLabel, toResolvableMaterialSpec } from '../../components/MaterialSelect';
 import ResultCards from '../../components/ResultCards';
 import { useWorkspace } from '../../context/WorkspaceContext';
 import { runMultilayer, runMultilayerDetails } from '../../services/api';
@@ -13,7 +14,8 @@ import { FREQ_UNITS, THICKNESS_UNITS, formatFrequency, formatLength, toSI } from
 import '../../styles/pages345.css';
 
 export default function Multilayer() {
-  const { materials, setActiveStack } = useWorkspace();
+  const { materials, sessionMaterials = [], setActiveStack, stageForReport } = useWorkspace();
+  const navigate = useNavigate();
   const [layers, setLayers] = useState(() => [newLayer()]);
   const [freq, setFreq] = useState('1');
   const [freqUnit, setFreqUnit] = useState('GHz');
@@ -22,14 +24,18 @@ export default function Multilayer() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  function buildApiLayers() {
+    return layers.map((l) => ({
+      material: toResolvableMaterialSpec(l.material, sessionMaterials),
+      thickness_m: toSI(l.thickness, l.unit, THICKNESS_UNITS),
+    }));
+  }
+
   async function run() {
     setError('');
     setLoading(true);
     try {
-      const apiLayers = layers.map((l) => ({
-        material: toMaterialSpec(l.material),
-        thickness_m: toSI(l.thickness, l.unit, THICKNESS_UNITS),
-      }));
+      const apiLayers = buildApiLayers();
       const frequency_hz = toSI(freq, freqUnit, FREQ_UNITS);
       // headline numbers + field profile and ±10% sensitivity, all from the same backend solver at one frequency
       const [res, detailsRes] = await Promise.all([
@@ -40,7 +46,9 @@ export default function Multilayer() {
       setDetails(detailsRes);
       // share this stack with Page 5 (Frequency-Response Analysis)
       setActiveStack({
-        label: layers.map((l) => `${materialLabel(l.material, materials)} ${l.thickness} ${l.unit}`).join(' / '),
+        label: layers
+          .map((l) => `${materialLabel(l.material, materials)} ${l.thickness} ${l.unit}`)
+          .join(' / '),
         frequency_hz,
         layers: apiLayers,
       });
@@ -51,6 +59,30 @@ export default function Multilayer() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function generateReport() {
+    if (!result) return;
+    const apiLayers = buildApiLayers();
+    stageForReport('stack', {
+      label: layers
+        .map((l) => `${materialLabel(l.material, materials)} ${l.thickness} ${l.unit}`)
+        .join(' / '),
+      fixed_request: {
+        layers: apiLayers,
+        frequency_hz: toSI(freq, freqUnit, FREQ_UNITS),
+      },
+      analysis_request: {
+        layers: apiLayers,
+        frequency_hz: toSI(freq, freqUnit, FREQ_UNITS),
+        frequency_start_hz: toSI(bandStart, bandUnit, FREQ_UNITS),
+        frequency_end_hz: toSI(bandEnd, bandUnit, FREQ_UNITS),
+        frequency_points: 201,
+        spacing: 'log',
+        target_se_db: Number(target),
+      },
+    });
+    navigate('/results');
   }
 
   return (
@@ -74,7 +106,11 @@ export default function Multilayer() {
         </section>
 
         <div className="em-results">
-          {!result && <section className="em-panel"><p className="em-hint">Build a stack and select Run Simulation to see its performance.</p></section>}
+          {!result && (
+            <section className="em-panel">
+              <p className="em-hint">Build a stack and select Run Simulation to see its performance.</p>
+            </section>
+          )}
           {result && (
             <>
               <section className="em-panel" aria-label="Overall performance">
@@ -88,7 +124,12 @@ export default function Multilayer() {
                     <thead><tr><th>Layer</th><th>Material</th><th>Thickness</th><th>Skin depth (δ)</th></tr></thead>
                     <tbody>
                       {result.stack.map((s) => (
-                        <tr key={s.order}><td>{s.order}</td><td>{s.material}</td><td>{formatLength(s.thickness_m)}</td><td>{formatLength(s.skin_depth_m)}</td></tr>
+                        <tr key={s.order}>
+                          <td>{s.order}</td>
+                          <td>{s.material}</td>
+                          <td>{formatLength(s.thickness_m)}</td>
+                          <td>{formatLength(s.skin_depth_m)}</td>
+                        </tr>
                       ))}
                     </tbody>
                   </table>
@@ -106,15 +147,24 @@ export default function Multilayer() {
                 </section>
               )}
               <section className="em-panel" aria-label="Next step">
-                <p className="em-hint">Your stack is saved. Continue to sweep it across a frequency band and check it against a target.</p>
+                <p className="em-hint">Your stack is saved. Continue to sweep it across a frequency band and check it against a target, or stage it in the report.</p>
                 <Link
                   to="/frequency-analysis"
                   state={{ source: 'stack' }}
                   className="em-btn"
-                  style={{ textDecoration: 'none', textAlign: 'center' }}
+                  style={{ textDecoration: 'none', textAlign: 'center', display: 'block' }}
                 >
                   Analyse frequency response →
                 </Link>
+                <button
+                  type="button"
+                  className="em-btn"
+                  style={{ marginTop: 10 }}
+                  onClick={generateReport}
+                >
+                  <FileDown size={16} />
+                  Generate Report
+                </button>
               </section>
             </>
           )}
@@ -132,7 +182,6 @@ const Plot = factory(Plotly.default || Plotly);
 const C = { field: '#5b3df5', minus: '#e0457b', plus: '#1f9d8a' };
 const SHADES = ['rgba(91,61,245,0.10)', 'rgba(31,157,138,0.12)', 'rgba(217,142,4,0.12)', 'rgba(224,69,123,0.10)', 'rgba(42,125,225,0.10)'];
 
-// Big margins + automargin + standoff so the axis titles are never clipped; the legend sits below the x-axis title.
 function Chart({ title, data, layout = {}, height = 420, bottom = 160 }) {
   const { xaxis, yaxis, ...rest } = layout;
   const axis = (ax = {}) => ({

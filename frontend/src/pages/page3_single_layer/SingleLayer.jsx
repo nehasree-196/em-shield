@@ -2,6 +2,7 @@
 // Defaults to the first material in the library.
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FileDown } from 'lucide-react';
 import MaterialSelect, {
   defaultMaterial,
   materialLabel,
@@ -18,6 +19,7 @@ const materialToSelectValue = (m) =>
   m
     ? { mode: 'library', id: m.id, sigma: '', epsR: '', muR: '' }
     : defaultMaterial();
+
 const SLAB_COLORS = {
   aluminium: ['#9aa7bd', '#5f6f8a'],
   bakelite: ['#8b5a3c', '#4a2c18'],
@@ -36,7 +38,6 @@ const SLAB_COLORS = {
   stainless_steel: ['#7f8c99', '#46525e'],
   zinc: ['#7aa0b8', '#3f6580'],
 };
-// fallback by category, then the original purple
 const CATEGORY_COLORS = {
   Conductor: ['#7b63ff', '#4a2fd1'],
   Insulator: ['#3f9a5a', '#1c5a30'],
@@ -53,22 +54,18 @@ function slabStyle(material, materials) {
 
 export default function SingleLayer() {
   const workspace = useWorkspace();
-  const materials = Array.isArray(workspace?.materials)
-    ? workspace.materials
-    : [];
+  const materials = Array.isArray(workspace?.materials) ? workspace.materials : [];
   const sessionMaterials = Array.isArray(workspace?.sessionMaterials)
     ? workspace.sessionMaterials
     : [];
   const setActiveSingle =
-    typeof workspace?.setActiveSingle === 'function'
-      ? workspace.setActiveSingle
-      : () => {};
+    typeof workspace?.setActiveSingle === 'function' ? workspace.setActiveSingle : () => {};
+  const stageForReport =
+    typeof workspace?.stageForReport === 'function' ? workspace.stageForReport : () => {};
 
   const navigate = useNavigate();
 
-  const [material, setMaterial] = useState(() =>
-    materialToSelectValue(materials[0])
-  );
+  const [material, setMaterial] = useState(() => materialToSelectValue(materials[0]));
   const [freq, setFreq] = useState('1');
   const [freqUnit, setFreqUnit] = useState('GHz');
   const [thickness, setThickness] = useState('1');
@@ -102,70 +99,89 @@ export default function SingleLayer() {
     }
   }
 
+  function generateReport() {
+    if (!result) return;
+    const materialSpec = toResolvableMaterialSpec(material, sessionMaterials);
+    stageForReport('single', {
+      label: `${materialLabel(material, materials)}, ${thickness} ${thicknessUnit}`,
+      request: {
+        material: materialSpec,
+        thickness_m: toSI(thickness, thicknessUnit, THICKNESS_UNITS),
+        frequency_hz: toSI(freq, freqUnit, FREQ_UNITS),
+      },
+      response: result,
+    });
+    navigate('/results');
+  }
+
   return (
     <div className="em-page">
       <h1>Single-Layer Simulator</h1>
       <div className="em-grid">
         <div className="em-side">
-        <section className="em-panel" aria-label="Simulation inputs">   
-          <h2>Inputs</h2>
-          <MaterialSelect value={material} onChange={setMaterial} />
-          <label>Frequency
-            <div className="em-inline">
-              <input className="em-input" value={freq} onChange={(e) => setFreq(e.target.value)} />
-              <select className="em-input" value={freqUnit} onChange={(e) => setFreqUnit(e.target.value)}>
-                {Object.keys(FREQ_UNITS).map((u) => <option key={u}>{u}</option>)}
-              </select>
-            </div>
-          </label>
-          <label>Thickness
-            <div className="em-inline">
-              <input className="em-input" value={thickness} onChange={(e) => setThickness(e.target.value)} />
-              <select className="em-input" value={thicknessUnit} onChange={(e) => setThicknessUnit(e.target.value)}>
-                {Object.keys(THICKNESS_UNITS).map((u) => <option key={u}>{u}</option>)}
-              </select>
-            </div>
-          </label>
-          <h2>Wave assumptions</h2>
-          <ul className="em-assumptions">
-            <li>Normally incident, far-field plane wave</li>
-            <li>Uniform, infinite planar slab in air</li>
-            <li>Constant material properties</li>
-            <li>No apertures, seams or edges</li>
-          </ul>
-        </section>
-        {result && (
-  <section className="em-panel" aria-label="Key numbers and model notes">
-    <h2>Key numbers</h2>
-    <ul className="em-keynums">
-      <li>
-        <span>Skin depth, δ = √(2/ωμσ)</span>
-        <strong>{formatLength(result.skin_depth_good_conductor_m)}</strong>
-        <small>Cross-check only</small>
-      </li>
-      <li>
-        <span>Thickness in skin depths (t/δ)</span>
-        <strong>{result.thickness_over_skin_depth === null ? 'n/a' : result.thickness_over_skin_depth.toFixed(2)}</strong>
-      </li>
-      <li>
-        <span>Conduction ratio, σ/(ωε)</span>
-        <strong>{result.conductor_ratio === null ? 'n/a' : result.conductor_ratio.toExponential(2)}</strong>
-      </li>
-    </ul>
-    <h2>Model notes</h2>
-    <ul className="em-assumptions">
-      <li>Very large SE values are capped in the display.</li>
-      <li>Real shields are limited by seams and apertures, which this model excludes.</li>
-      <li>The attenuation plot is a single-pass envelope and ignores internal reflections.</li>
-    </ul>
-  </section>
-)}
-</div>
+          <section className="em-panel" aria-label="Simulation inputs">
+            <h2>Inputs</h2>
+            <MaterialSelect value={material} onChange={setMaterial} />
+            <label>Frequency
+              <div className="em-inline">
+                <input className="em-input" value={freq} onChange={(e) => setFreq(e.target.value)} />
+                <select className="em-input" value={freqUnit} onChange={(e) => setFreqUnit(e.target.value)}>
+                  {Object.keys(FREQ_UNITS).map((u) => <option key={u}>{u}</option>)}
+                </select>
+              </div>
+            </label>
+            <label>Thickness
+              <div className="em-inline">
+                <input className="em-input" value={thickness} onChange={(e) => setThickness(e.target.value)} />
+                <select className="em-input" value={thicknessUnit} onChange={(e) => setThicknessUnit(e.target.value)}>
+                  {Object.keys(THICKNESS_UNITS).map((u) => <option key={u}>{u}</option>)}
+                </select>
+              </div>
+            </label>
+            <h2>Wave assumptions</h2>
+            <ul className="em-assumptions">
+              <li>Normally incident, far-field plane wave</li>
+              <li>Uniform, infinite planar slab in air</li>
+              <li>Constant material properties</li>
+              <li>No apertures, seams or edges</li>
+            </ul>
+          </section>
+          {result && (
+            <section className="em-panel" aria-label="Key numbers and model notes">
+              <h2>Key numbers</h2>
+              <ul className="em-keynums">
+                <li>
+                  <span>Skin depth, δ = √(2/ωμσ)</span>
+                  <strong>{formatLength(result.skin_depth_good_conductor_m)}</strong>
+                  <small>Cross-check only</small>
+                </li>
+                <li>
+                  <span>Thickness in skin depths (t/δ)</span>
+                  <strong>{result.thickness_over_skin_depth === null ? 'n/a' : result.thickness_over_skin_depth.toFixed(2)}</strong>
+                </li>
+                <li>
+                  <span>Conduction ratio, σ/(ωε)</span>
+                  <strong>{result.conductor_ratio === null ? 'n/a' : result.conductor_ratio.toExponential(2)}</strong>
+                </li>
+              </ul>
+              <h2>Model notes</h2>
+              <ul className="em-assumptions">
+                <li>Very large SE values are capped in the display.</li>
+                <li>Real shields are limited by seams and apertures, which this model excludes.</li>
+                <li>The attenuation plot is a single-pass envelope and ignores internal reflections.</li>
+              </ul>
+            </section>
+          )}
+        </div>
 
         <div className="em-results">
           <section className="em-panel" aria-label="Simulation control">
-           <div className="em-slab" style={slabStyle(material, materials)}>{materialLabel(material, materials)} slab, {thickness} {thicknessUnit}</div>
-            <button type="button" className="em-btn" onClick={run} disabled={loading}>{loading ? 'Running…' : 'Run Simulation'}</button>
+            <div className="em-slab" style={slabStyle(material, materials)}>
+              {materialLabel(material, materials)} slab, {thickness} {thicknessUnit}
+            </div>
+            <button type="button" className="em-btn" onClick={run} disabled={loading}>
+              {loading ? 'Running…' : 'Run Simulation'}
+            </button>
             {error && <p className="em-error" role="alert">{error}</p>}
           </section>
 
@@ -173,20 +189,35 @@ export default function SingleLayer() {
             <section className="em-panel" aria-label="Results">
               <h2>Results at {freq} {freqUnit}</h2>
               <ResultCards result={result} showSkinDepth />
-            
 
               <ResultsChart
                 title="Field attenuation through the slab (single pass)"
                 x={result.profile_z_m.map((z) => z * 1e6)}
                 traces={[{ name: '|E(z)| / |E(0)|', y: result.profile_relative_amplitude }]}
-                xTitle="Depth into slab, z (µm)" yTitle="Relative field amplitude |E(z)| / |E(0)| (unitless)"
+                xTitle="Depth into slab, z (µm)"
+                yTitle="Relative field amplitude |E(z)| / |E(0)| (unitless)"
               />
 
               <div className="em-next-step">
-                <button type="button" className="em-btn" onClick={() => navigate('/frequency-analysis')}>
+                <button
+                  type="button"
+                  className="em-btn"
+                  onClick={() => navigate('/frequency-analysis', { state: { source: 'single' } })}
+                >
                   Analyse frequency response →
                 </button>
-                <p className="em-hint">Sweeps this {materialLabel(material, materials)} slab across a frequency band.</p>
+                <button
+                  type="button"
+                  className="em-btn"
+                  onClick={generateReport}
+                >
+                  <FileDown size={16} />
+                  Generate Report
+                </button>
+                <p className="em-hint">
+                  Sweeps this {materialLabel(material, materials)} slab across a frequency band.
+                  The Generate Report button stages this result and takes you to the report preview.
+                </p>
               </div>
             </section>
           )}

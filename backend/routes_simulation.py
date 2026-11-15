@@ -1,6 +1,10 @@
-"""routes_simulation.py — FastAPI routes for pages 3-5; every number returned is computed here, never in the UI."""
+"""routes_simulation.py — FastAPI routes for pages 3-5 and 7; every number returned is computed here, never in the UI."""
+from datetime import datetime, timezone
+
 import numpy as np
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
+
+from exports import export_report_pdf
 from materials import list_materials, resolve_material
 from multilayer import analyse, multilayer_details, stack_response, sweep
 from schemas import MultilayerAnalysisRequest, MultilayerRequest, SingleLayerRequest, SweepRequest
@@ -30,11 +34,6 @@ def _resolve(layers):
     return stack, labels
 
 
-# @router.get("/materials")
-# def get_materials():
-#     return list_materials()  # delete this route if Page 2 already provides it
-
-
 @router.post("/single-layer")
 def run_single_layer(req: SingleLayerRequest):
     try:
@@ -58,7 +57,6 @@ def run_single_layer(req: SingleLayerRequest):
         "skin_depth_good_conductor_m": _num(skin_depth_good_conductor(f, s, m)[0]),
         "thickness_over_skin_depth": _num(req.thickness_m / delta) if np.isfinite(delta) else None,
         "conductor_ratio": _num(conductor_ratio(f, s, e)[0]) if s > 0 else 0.0,
-        # single-pass envelope exp(-alpha z): ignores internal reflections, label it that way in the UI
         "profile_z_m": z.tolist(),
         "profile_relative_amplitude": np.exp(-alpha * z).tolist(),
     }
@@ -70,8 +68,6 @@ def run_multilayer(req: MultilayerRequest):
     stack, labels = _resolve(req.layers)
     f = np.array([req.frequency_hz])
     res = stack_response(f, stack)
-    
-    # Calculate skin depth for each layer to populate the table in the UI
     stack_details = []
     for i, ((s, e, m, d), label) in enumerate(zip(stack, labels)):
         delta = skin_depth(f, s, e, m)[0]
@@ -81,7 +77,6 @@ def run_multilayer(req: MultilayerRequest):
             "thickness_m": d,
             "skin_depth_m": _num(delta),
         })
-
     return {
         "layer_count": len(stack),
         "total_thickness_m": float(sum(l[3] for l in stack)),
@@ -97,13 +92,15 @@ def run_multilayer(req: MultilayerRequest):
 @router.post("/sweep")
 def run_sweep(req: SweepRequest):
     stack, _ = _resolve(req.layers)
-    res = sweep(stack, req.frequency_start_hz, req.frequency_end_hz, req.frequency_points, req.spacing)
+    res = sweep(stack, req.frequency_start_hz, req.frequency_end_hz,
+                req.frequency_points, req.spacing)
     out = {k: v.tolist() for k, v in res.items()}
     out["total_thickness_m"] = float(sum(l[3] for l in stack))
     out["target_se_db"] = req.target_se_db
     out["failing_ranges_hz"] = (
         [{"start_hz": a, "end_hz": b} for a, b in
-         failing_ranges(res["frequency_hz"], res["shielding_effectiveness_db"], req.target_se_db)]
+         failing_ranges(res["frequency_hz"], res["shielding_effectiveness_db"],
+                        req.target_se_db)]
         if req.target_se_db is not None else [])
     return out
 

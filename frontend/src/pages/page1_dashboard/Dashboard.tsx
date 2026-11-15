@@ -64,12 +64,14 @@ const simulationModes = [
   },
 ];
 
+// Team members in the original order. Leader is indicated inline as "(Leader)".
 const groupMembers = [
-  { name: "Pragya Patni", roll: "2401EE15", leader: true },
-  { name: "Kodavath Yuvaraj Naik", roll: "2401EE12", leader: false },
-  { name: "Neha Sree Kuppam", roll: "2402PC02", leader: false },
+  { name: "Pragya Patni",             roll: "2401EE15", leader: true },
   { name: "Nimmagadda Kumuda Hasini", roll: "2401EE13", leader: false },
-  { name: "Prabhudeva Indurupati", roll: "2401EE27", leader: false },
+  { name: "Neha Sree Kuppam",         roll: "2402PC02", leader: false },
+  { name: "Kodavath Yuvaraj Naik",    roll: "2401EE12", leader: false },
+  
+  { name: "Indurupati Prabhudeva",    roll: "2401EE27", leader: false },
 ];
 
 export default function Dashboard() {
@@ -146,39 +148,24 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* Group Details */}
-      <section aria-labelledby="group-heading">
-        <div className="section-heading">
-          <h3 id="group-heading">
-            Group Details
-          </h3>
-
-          <span>Project team</span>
+      {/* Group Details — compact footer */}
+      <section aria-labelledby="group-heading" className="group-footer">
+        <div className="group-footer-heading">
+          <Users size={14} />
+          <h4 id="group-heading">Group Details</h4>
         </div>
 
-        <div className="group-card">
-          <div className="group-card-header">
-            <span className="workspace-icon">
-              <Users size={22} />
-            </span>
-
-            <h4>EM-Shield Project Team</h4>
-          </div>
-
-          <ul className="group-member-list">
-            {groupMembers.map((member) => (
-              <li key={member.roll} className="group-member">
-                <span className="group-member-info">
-                  <strong>
-                    {member.name}
-                    {member.leader && " (Leader)"}
-                  </strong>
-                  <span className="group-member-roll">{member.roll}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ul className="group-footer-list">
+          {groupMembers.map((member) => (
+            <li key={member.roll} className="group-footer-item">
+              <span className="group-footer-name">
+                {member.name}
+                {member.leader && " (Leader)"}
+              </span>
+              <span className="group-footer-roll">{member.roll}</span>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* Simulation Selection Popup */}

@@ -18,9 +18,6 @@ export default function AppLayout() {
 
         <footer className="app-footer">
           <span>EM-Shield</span>
-          <span>
-            Preliminary engineering analysis · Plane-wave model
-          </span>
         </footer>
       </div>
     </div>

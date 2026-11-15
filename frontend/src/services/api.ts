@@ -108,6 +108,9 @@ export const runSweep = (body: unknown) =>
 export const runMultilayerAnalysis = (body: unknown) =>
   request("/multilayer/analysis", { method: "POST", body: JSON.stringify(body) });
 
+export const runMultilayerDetails = (body: unknown) =>
+  request("/multilayer/details", { method: "POST", body: JSON.stringify(body) });
+
 // ---------------------------------------------------------
 // PAGE 7 — PDF REPORT
 // ---------------------------------------------------------

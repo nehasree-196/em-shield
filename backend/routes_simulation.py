@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException, Response
 
 from exports import export_report_pdf
 from materials import list_materials, resolve_material
-from multilayer import analyse, stack_response, sweep
+from multilayer import analyse, multilayer_details, stack_response, sweep
 from schemas import (
     MultilayerAnalysisRequest, MultilayerRequest, ReportRequest,
     SingleLayerRequest, SweepRequest,
@@ -117,6 +117,13 @@ def run_multilayer_analysis(req: MultilayerAnalysisRequest):
                    req.frequency_start_hz, req.frequency_end_hz,
                    req.frequency_points, req.spacing, req.target_se_db,
                    req.frequency_hz)
+
+
+@router.post("/multilayer/details")
+def run_multilayer_details(req: MultilayerRequest):
+    """Field amplitude profile and ±10% sensitivity at one evaluation frequency (Page 4)."""
+    stack, labels = _resolve(req.layers)
+    return multilayer_details(stack, labels, req.frequency_hz)
 
 
 # ---------------------------------------------------------------------------

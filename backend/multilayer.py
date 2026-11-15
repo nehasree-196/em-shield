@@ -167,3 +167,64 @@ def analyse(stack, labels, f_start, f_end, n_points, spacing, target_db, eval_fr
         "layer_contribution": layer_contribution(eval_freq_hz, stack, labels),
         "sensitivity": sensitivity(f, stack, labels),
     }
+
+
+# ---------------------------------------------------------------------------
+# Multilayer page details: field amplitude inside the stack + ±10% sensitivity, both at ONE frequency
+# ---------------------------------------------------------------------------
+def field_profile(freq_hz, stack, labels, points_per_layer=60):
+    """Relative field amplitude |E(z)| / |E_incident| through the stack at one frequency, in dB.
+
+    Uses reflection coefficients looking into the rest of the stack (numerically stable for thick conductors),
+    and returns 20*log10(|E|/|E0|) so values down to hundreds of dB stay finite. E is continuous across interfaces,
+    so the last point equals -SE of the whole stack.
+    """
+    f = np.array([freq_hz], dtype=float)
+    n = len(stack)
+    props = [layer_properties(f, s, e, m) for (s, e, m, _) in stack]
+    gam = [p[0][0] for p in props]
+    eta = [ETA0] + [p[1][0] for p in props] + [ETA0]
+    d = [layer[3] for layer in stack]
+    rho = [(eta[k + 1] - eta[k]) / (eta[k + 1] + eta[k]) for k in range(n + 1)]   # interface k: medium k -> k+1
+
+    # backward pass: R_back[k] = reflection seen from layer k at its back plane; Rf[k] = same, at its front plane
+    R_back = [0j] * n
+    Rf = [0j] * (n + 2)                                   # Rf[n + 1] = 0 (exit medium has no backward wave)
+    for k in range(n - 1, -1, -1):
+        r_next = Rf[k + 2]
+        R_back[k] = (rho[k + 1] + r_next) / (1 + rho[k + 1] * r_next)
+        Rf[k + 1] = R_back[k] * np.exp(-2.0 * gam[k] * d[k])
+
+    # forward pass in log amplitude: ln|forward amplitude at the front plane of layer k|
+    lnF = []
+    ln_prev = 0.0                                         # incident medium amplitude = 1
+    prop = 0.0
+    for k in range(n):
+        ln_prev = ln_prev - prop + np.log(abs((1 + rho[k]) / (1 + rho[k] * Rf[k + 1])))
+        lnF.append(ln_prev)
+        prop = gam[k].real * d[k]                         # loss to the back plane, applied before the next interface
+
+    depth, amp_db, layers_out, start = [], [], [], 0.0
+    for k in range(n):
+        alpha = gam[k].real
+        z = np.linspace(0.0, d[k], points_per_layer)
+        bracket = np.abs(1 + R_back[k] * np.exp(-2.0 * gam[k] * (d[k] - z)))
+        ln_e = lnF[k] - alpha * z + np.log(np.maximum(bracket, 1e-300))
+        depth.extend((start + z).tolist())
+        amp_db.extend((DB_PER_NEPER * ln_e).tolist())
+        layers_out.append({
+            "order": k + 1, "material": labels[k], "start_m": start, "end_m": start + d[k],
+            "skin_depth_m": float(1.0 / alpha) if alpha > 0 else None,
+        })
+        start += d[k]
+    return {"frequency_hz": freq_hz, "depth_m": depth, "relative_amplitude_db": amp_db, "layers": layers_out}
+
+
+def multilayer_details(stack, labels, freq_hz):
+    """Everything the Multilayer page plots besides the headline numbers; all at the evaluation frequency."""
+    f = np.array([freq_hz], dtype=float)
+    return {
+        "frequency_hz": freq_hz,
+        "field_profile": field_profile(freq_hz, stack, labels),
+        "sensitivity": sensitivity(f, stack, labels),     # one-point 'band' => SE at the evaluation frequency
+    }

@@ -128,8 +128,8 @@ export default function FrequencyAnalysis() {
               value={source}
               onChange={(e) => { setSource(e.target.value); setResult(null); setSens(null); }}
             >
-              <option value="single">Single-layer slab (Page 3)</option>
-              <option value="stack">Multilayer stack (Page 4)</option>
+              <option value="single">Single-layer slab </option>
+              <option value="stack">Multilayer stack </option>
             </select>
           </label>
           {design

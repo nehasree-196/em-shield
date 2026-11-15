@@ -126,9 +126,6 @@ def run_multilayer_details(req: MultilayerRequest):
     return multilayer_details(stack, labels, req.frequency_hz)
 
 
-# ---------------------------------------------------------------------------
-# PAGE 7 — PDF REPORT
-# ---------------------------------------------------------------------------
 @router.post("/report")
 def generate_report(req: ReportRequest):
     # ---- 1. Single-layer ----
@@ -239,7 +236,14 @@ def generate_report(req: ReportRequest):
 
 
 def _compute_sensitivity(stack, sweep_req):
-    """Four extra sweeps (thickness/conductivity × ∓10 %) mirroring Page 5."""
+    """Four extra sweeps (thickness/conductivity × ∓10 %) matching Page 5.
+
+    Same perturbation semantics as `multilayer.sensitivity()`: thickness scales
+    the geometric thickness, conductivity scales sigma. Lossless layers are
+    not touched for the conductivity case — a zero sigma stays zero, which is
+    the same guard `multilayer.sensitivity()` applies when it skips lossless
+    layers.
+    """
     f_start, f_end, n, sp = (sweep_req.frequency_start_hz, sweep_req.frequency_end_hz,
                              sweep_req.frequency_points, sweep_req.spacing)
 
@@ -249,7 +253,10 @@ def _compute_sensitivity(stack, sweep_req):
             if kind == "thickness":
                 out.append((s, e, m, d * k))
             else:
-                out.append((s * k, e, m, d))
+                # Skip lossless layers: sigma == 0 has nothing to scale, and
+                # 0 * 0.9 == 0 * 1.1 == 0 anyway — leave them alone to avoid
+                # implying a perturbation that isn't real.
+                out.append((s * k if s > 0 else s, e, m, d))
         return out
 
     def one(ls):

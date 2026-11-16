@@ -247,6 +247,19 @@ def export_report_pdf(*,
     if included:
         story.append(Paragraph("Included sections: " + " · ".join(included), ss["Body2"]))
         story.append(Spacer(1, 8))
+    story.append(Paragraph("Model assumptions", ss["H2"]))
+    for note in [
+        "Normally incident, far-field plane wave.",
+        "Uniform, infinite planar layers in air.",
+        "Constant material properties.",
+        "No apertures, seams or edges.",
+        "Attenuation profiles are single-pass envelopes and ignore internal reflections.",
+        "Material properties sourced from Ansys HFSS material library.",
+        "All simulations are done assuming properties of materials as "
+        "frequency-independent.",
+    ]:
+        story.append(Paragraph(f"• {note}", ss["Body2"]))
+    story.append(Spacer(1, 6))
 
     # Only page-break between sections, not before the first one.
     _section_started = {"v": False}
@@ -294,6 +307,9 @@ def export_report_pdf(*,
             "No apertures, seams or edges.",
             "The attenuation profile is a single-pass envelope and ignores "
             "internal reflections.",
+            "Material properties sourced from Ansys HFSS material library.",
+            "All simulations are done assuming properties of materials as "
+            "frequency-independent.",
         ]
         for n in notes:
             story.append(Paragraph(f"• {n}", ss["Body2"]))

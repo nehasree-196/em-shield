@@ -103,7 +103,6 @@ def list_materials():
 
 def resolve_material(spec):
     """Resolve a MaterialSpec -> (sigma, epsilon_r, mu_r, label)."""
-
     if spec.material_id:
         for material in load_materials():
             if material["id"].lower() == spec.material_id.lower():
@@ -114,8 +113,8 @@ def resolve_material(spec):
                     material["name"],
                 )
         raise KeyError(f"Unknown material_id '{spec.material_id}'")
-
-    return (spec.sigma_s_per_m, spec.epsilon_r, spec.mu_r, "Custom material")
+    label = (getattr(spec, "name", None) or "").strip() or "Custom material"
+    return (spec.sigma_s_per_m, spec.epsilon_r, spec.mu_r, label)
 
 
 def save_materials(materials):

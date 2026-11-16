@@ -38,6 +38,7 @@ export function toResolvableMaterialSpec(selected, sessionMaterials) {
       sigma_s_per_m: p.conductivity_s_m ?? 0,
       epsilon_r: p.relative_permittivity ?? 1,
       mu_r: p.relative_permeability ?? 1,
+      name: session.name || 'Custom material',
     };
   }
   return { material_id: selected.id };

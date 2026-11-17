@@ -1,12 +1,10 @@
-import { getMaterialColor } from "../types";
+import { getMaterialColor, formatThickness } from "../types";
 import type { CandidateLayer } from "../types";
 
 type Props = {
   layers: CandidateLayer[];
 };
 
-// First two letters of the material name, uppercased.
-// Falls back to the material id if the name is missing/empty.
 function shortLabel(layer: CandidateLayer): string {
   const source =
     (layer.material_name && layer.material_name.trim()) ||
@@ -18,7 +16,7 @@ function shortLabel(layer: CandidateLayer): string {
 export function LayerStackView({ layers }: Props) {
   const total = layers.reduce((s, l) => s + l.thickness_m, 0) || 1;
   const title = layers
-    .map((l) => `${l.material_name} ${(l.thickness_m * 1e3).toFixed(3)} mm`)
+    .map((l) => `${l.material_name} ${formatThickness(l.thickness_m)}`)
     .join(" / ");
 
   return (

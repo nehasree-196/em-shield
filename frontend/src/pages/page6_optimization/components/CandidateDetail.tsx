@@ -1,4 +1,5 @@
 import type { Candidate } from "../types";
+import { formatThickness } from "../types"; // Import the helper
 import { LayerStackView } from "./LayerStackView";
 
 type Props = {
@@ -13,18 +14,16 @@ export function CandidateDetail({ candidate, target, compact = false }: Props) {
     <div className="opt-detail">
       <h4>Rank {c.rank} — {c.layer_count} layer{c.layer_count === 1 ? "" : "s"}</h4>
 
-      <div style={{ marginBottom: compact ? 8 : 20, padding: compact ? 0 : "4px 0" }}>
+      <div style={{ marginBottom: compact ? 10 : 20, padding: compact ? 0 : "4px 0" }}>
         <LayerStackView layers={c.layers} />
       </div>
 
-      {/* Compact mode: one-line inline layer breakdown so the pinned card
-          still shows per-layer thicknesses without a tall list. */}
       {compact && (
         <div className="opt-detail-layers-inline">
           {c.layers.map((l) => (
             <span key={l.order} className="opt-detail-layer-chip">
               <strong>{l.material_name}</strong>
-              <span>{(l.thickness_m * 1e3).toFixed(3)} mm</span>
+              <span>{formatThickness(l.thickness_m)}</span>
             </span>
           ))}
         </div>
@@ -33,7 +32,7 @@ export function CandidateDetail({ candidate, target, compact = false }: Props) {
       <div className="opt-detail-grid">
         <div>
           <span>Total thickness</span>
-          <strong>{(c.total_thickness_m * 1e3).toFixed(3)} mm</strong>
+          <strong>{formatThickness(c.total_thickness_m)}</strong>
         </div>
         {c.areal_mass_kg_m2 !== null && (
           <div>
@@ -63,7 +62,6 @@ export function CandidateDetail({ candidate, target, compact = false }: Props) {
         </div>
       </div>
 
-      {/* Non-compact (full) mode keeps the numbered list as before. */}
       {!compact && (
         <div style={{ marginTop: 20 }}>
           <span style={{ color: "var(--muted)", fontSize: "10px", fontWeight: 700, letterSpacing: "1.2px", textTransform: "uppercase" }}>
@@ -72,7 +70,7 @@ export function CandidateDetail({ candidate, target, compact = false }: Props) {
           <ol style={{ margin: "8px 0 0 0", paddingLeft: "20px", fontSize: "12px", color: "var(--deep-purple)", lineHeight: 1.6 }}>
             {c.layers.map((l) => (
               <li key={l.order}>
-                <strong>{l.material_name}</strong> — {(l.thickness_m * 1e3).toFixed(3)} mm
+                <strong>{l.material_name}</strong> — {formatThickness(l.thickness_m)}
               </li>
             ))}
           </ol>

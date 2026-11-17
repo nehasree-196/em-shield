@@ -1,5 +1,6 @@
 import {Material} from "../../services/api";
 export type {Material};
+
 export type OptimizationRequest = {
   materials: Material[];
   target_se_db?: number;
@@ -97,4 +98,22 @@ export function getMaterialColor(id: string) {
   for (let i = 0; i < key.length; i++) hash = key.charCodeAt(i) + ((hash << 5) - hash);
   const c = (hash & 0x00ffffff).toString(16).toUpperCase();
   return "#" + "00000".substring(0, 6 - c.length) + c;
+}
+
+export function formatThickness(meters: number): string {
+  if (meters === null || meters === undefined) return "—";
+  if (meters === 0) return "0 mm";
+  
+  // If >= 1 mm, show in mm with 4 decimal places (e.g., 1.2345 mm)
+  if (meters >= 1e-3) {
+    return `${(meters * 1e3).toFixed(4)} mm`;
+  }
+  
+  // If >= 1 µm, show in µm with 4 decimal places (e.g., 500.1234 µm)
+  if (meters >= 1e-6) {
+    return `${(meters * 1e6).toFixed(4)} µm`;
+  }
+  
+  // If smaller, show in nm with 2 decimal places (e.g., 50.00 nm)
+  return `${(meters * 1e9).toFixed(2)} nm`;
 }
